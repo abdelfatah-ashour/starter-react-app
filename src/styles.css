@@ -1,8 +1,129 @@
-:root {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  color: #1a1d23;
-  background: #f5f6f8;
+@import "tailwindcss";
+
+/* Theme is an explicit attribute on <html>, set before first paint by the
+   inline script in index.html, so there is no flash of the wrong theme. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --color-canvas: #f1f3f7;
+  --color-surface: #ffffff;
+  --color-hairline: #e9ebf1;
+
+  --color-ink: #10131a;
+  --color-ink-soft: #475066;
+  --color-ink-muted: #6b7386;
+
+  --color-brand-50: #eef0fe;
+  --color-brand-100: #e2e5fc;
+  --color-brand-200: #c3c8f8;
+  --color-brand-300: #aab2ee;
+  --color-brand-500: #5b5ee8;
+  --color-brand-600: #4f52e0;
+  --color-brand-700: #4245c9;
+
+  --color-good: #15803d;
+  --color-good-soft: #dcf5e4;
+  --color-warn: #b45309;
+  --color-warn-bar: #e5a50a;
+  --color-warn-soft: #fdf0d5;
+  --color-bad: #dc2626;
+  --color-bad-soft: #fde4e4;
+  --color-neutral-soft: #eceef2;
+  --color-danger-solid: #dc2626;
+  --color-scrim: rgb(16 19 26 / 0.15);
+
+  --color-bar: #b0b6ef;
+  --color-bar-accent: #4f52e0;
+  --color-target: #c2710c;
+
+  --radius-card: 14px;
 }
-body { margin: 0; }
-.shell { max-width: 720px; margin: 10vh auto; padding: 0 24px; }
-code { background: #e9ebf0; padding: 2px 6px; border-radius: 4px; }
+
+
+/* Dark theme: the same token names re-bound, so every component inherits it
+   without a single `dark:` utility. */
+[data-theme="dark"] {
+  --color-canvas: #0d0f15;
+  --color-surface: #161a23;
+  --color-hairline: #262b38;
+
+  --color-ink: #eef0f6;
+  --color-ink-soft: #b6bdcd;
+  --color-ink-muted: #8a92a6;
+
+  --color-brand-50: #1e2142;
+  --color-brand-100: #272b52;
+  --color-brand-200: #3b4082;
+  --color-brand-300: #5e63bf;
+  --color-brand-500: #6e71f0;
+  --color-brand-600: #7c7ef5;
+  --color-brand-700: #a9abff;
+
+  --color-good: #4ade80;
+  --color-good-soft: #13301f;
+  --color-warn: #fbbf24;
+  --color-warn-soft: #362709;
+  --color-warn-bar: #e5a50a;
+  --color-bad: #f87171;
+  --color-bad-soft: #3b1618;
+  --color-neutral-soft: #242936;
+  --color-danger-solid: #e5484d;
+  --color-scrim: rgb(0 0 0 / 0.6);
+
+  --color-bar: #3e4293;
+  --color-bar-accent: #6e71f0;
+  --color-target: #e0922a;
+
+  color-scheme: dark;
+}
+
+:root {
+  color-scheme: light;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    margin: 0;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+}
+
+@utility card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-card);
+  box-shadow: 0 1px 2px rgb(16 19 26 / 0.04);
+}
+
+[data-theme="dark"] .card {
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes pop-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -48%) scale(0.98); }
+}
