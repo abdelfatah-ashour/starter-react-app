@@ -118,3 +118,38 @@ test("delete confirmation dialog", async ({ page }) => {
   await expect(page.getByTestId("confirm-delete")).toBeVisible();
   await shot(page, "users-confirm-delete-1280x800", false);
 });
+
+test.describe("signed out", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test("login page, desktop", async ({ page }) => {
+    await page.setViewportSize(viewports.desktop);
+    await page.goto("/");
+    await expect(page.getByTestId("login-page")).toBeVisible();
+    await shot(page, "login-1280x800", false);
+  });
+
+  test("login page, mobile", async ({ page }) => {
+    await page.setViewportSize(viewports.mobile);
+    await page.goto("/");
+    await expect(page.getByTestId("login-page")).toBeVisible();
+    await shot(page, "login-375x812", false);
+  });
+});
+
+test("dashboard desktop, French", async ({ page }) => {
+  await page.setViewportSize(viewports.desktop);
+  await ready(page);
+  await page.getByTestId("lang-fr").click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  await shot(page, "desktop-fr-1280x800");
+});
+
+test("users desktop, French", async ({ page }) => {
+  await page.setViewportSize(viewports.desktop);
+  await ready(page);
+  await page.getByTestId("lang-fr").click();
+  await page.getByTestId("nav-users").click();
+  await expect(page.getByTestId("users-page")).toBeVisible();
+  await shot(page, "users-fr-1280x800");
+});

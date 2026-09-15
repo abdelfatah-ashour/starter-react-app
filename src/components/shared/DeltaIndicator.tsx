@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { formatDelta } from "@/lib/format";
+import { useTranslation } from "react-i18next";
 
 interface DeltaIndicatorProps {
   delta: number;
@@ -10,6 +11,7 @@ interface DeltaIndicatorProps {
 
 /** Direction triangle + signed percent, coloured by whether the move is good. */
 export function DeltaIndicator({ delta, higherIsBetter, caption }: DeltaIndicatorProps) {
+  const { t } = useTranslation();
   const rising = delta >= 0;
   const good = rising === higherIsBetter;
 
@@ -20,7 +22,7 @@ export function DeltaIndicator({ delta, higherIsBetter, caption }: DeltaIndicato
           <path d={rising ? "M4.5 0 9 8H0z" : "M4.5 8 0 0h9z"} fill="currentColor" />
         </svg>
         <span className="tabular-nums">{formatDelta(delta)}</span>
-        <span className="sr-only">{good ? " (improving)" : " (worsening)"}</span>
+        <span className="sr-only">{good ? t("kpi.improving") : t("kpi.worsening")}</span>
       </span>
       {caption ? <span className="whitespace-nowrap text-ink-muted">{caption}</span> : null}
     </p>

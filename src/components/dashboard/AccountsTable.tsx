@@ -16,19 +16,20 @@ import { SortableHeader } from "@/components/shared/SortableHeader";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { useSortable } from "@/hooks/useSortable";
 import { useTextFilter } from "@/hooks/useTextFilter";
-import { formatCurrency, formatNumber } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
 import type { Account } from "@/types";
+import { useTranslation } from "react-i18next";
 
 type ColumnKey = "name" | "plan" | "region" | "owner" | "mrr" | "seats" | "status" | "health";
 
-const COLUMNS: { key: ColumnKey; label: string; align?: "right" }[] = [
-  { key: "name", label: "Account" },
-  { key: "plan", label: "Plan" },
-  { key: "region", label: "Region" },
-  { key: "owner", label: "Owner" },
-  { key: "mrr", label: "MRR", align: "right" },
-  { key: "seats", label: "Seats", align: "right" },
-  { key: "status", label: "Status" },
+const COLUMNS: { key: ColumnKey; align?: "right" }[] = [
+  { key: "name" },
+  { key: "plan" },
+  { key: "region" },
+  { key: "owner" },
+  { key: "mrr", align: "right" },
+  { key: "seats", align: "right" },
+  { key: "status" },
 ];
 
 const ACCESSORS: Record<ColumnKey, (account: Account) => string | number> = {
@@ -49,6 +50,7 @@ interface AccountsTableProps {
 }
 
 export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableProps) {
+  const { t } = useTranslation();
   const { query, setQuery, filtered } = useTextFilter(accounts, (a) => [
     a.name,
     a.owner,
@@ -62,24 +64,24 @@ export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableP
     <Card>
       <CardHeader>
         <div>
-          <CardTitle>Accounts</CardTitle>
+          <CardTitle>{t("accounts.title")}</CardTitle>
           <CardDescription>
-            {formatNumber(accounts.length)} account{accounts.length === 1 ? "" : "s"}
+            {t("accounts.count", { count: accounts.length })}
           </CardDescription>
         </div>
         <div className="relative w-full lg:w-[340px]">
           <Search
             aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
+            className="pointer-events-none absolute top-1/2 start-3 size-4 -translate-y-1/2 text-ink-muted"
           />
           <Input
             data-testid="table-filter"
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            aria-label="Filter accounts"
-            placeholder="Filter by name, owner, plan, region, status…"
-            className="pl-9"
+            aria-label={t("accounts.filterLabel")}
+            placeholder={t("accounts.filterPlaceholder")}
+            className="ps-9"
           />
         </div>
       </CardHeader>
@@ -87,16 +89,14 @@ export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableP
       <CardContent className="px-5 pt-4">
         <TableScroll>
           <Table data-testid="accounts-table">
-            <caption className="sr-only">
-              Accounts, sortable by column. Select a row to open its full record.
-            </caption>
+            <caption className="sr-only">{t("accounts.caption")}</caption>
             <TableHead>
               <tr>
                 {COLUMNS.map((column) => (
                   <SortableHeader
                     key={column.key}
                     columnKey={column.key}
-                    label={column.label}
+                    label={t(`accounts.columns.${column.key}`)}
                     align={column.align}
                     direction={directionFor(column.key)}
                     onToggle={() => toggle(column.key)}
@@ -104,7 +104,7 @@ export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableP
                 ))}
                 <SortableHeader
                   columnKey="health"
-                  label="Health"
+                  label={t("accounts.columns.health")}
                   direction={directionFor("health")}
                   onToggle={() => toggle("health")}
                 />
@@ -134,10 +134,10 @@ export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableP
                   <TableCell>{account.plan}</TableCell>
                   <TableCell>{account.region}</TableCell>
                   <TableCell className="whitespace-nowrap">{account.owner}</TableCell>
-                  <TableCell data-testid="cell-mrr" className="text-right tabular-nums text-ink">
+                  <TableCell data-testid="cell-mrr" className="text-end tabular-nums text-ink">
                     {formatCurrency(account.mrr)}
                   </TableCell>
-                  <TableCell className="text-right tabular-nums">{account.seats}</TableCell>
+                  <TableCell className="text-end tabular-nums">{account.seats}</TableCell>
                   <TableCell>
                     <StatusBadge status={account.status} />
                   </TableCell>
@@ -153,8 +153,8 @@ export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableP
         {sorted.length === 0 ? (
           <EmptyState
             data-testid="table-empty"
-            title="No accounts match that filter"
-            description="Try a different name, owner, plan, region or status."
+            title={t("accounts.emptyTitle")}
+            description={t("accounts.emptyDescription")}
           />
         ) : null}
       </CardContent>

@@ -13,8 +13,9 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { formatDate } from "@/lib/format";
 import type { User } from "@/types";
+import { useTranslation } from "react-i18next";
 
-const COLUMNS = ["Name", "Email", "Role", "Team", "Status", "Last login"];
+const COLUMNS = ["name", "email", "role", "team", "status", "lastLogin"] as const;
 
 interface UsersTableProps {
   users: User[];
@@ -23,21 +24,23 @@ interface UsersTableProps {
 }
 
 export function UsersTable({ users, onEdit, onDelete }: UsersTableProps) {
+  const { t } = useTranslation();
+
   if (users.length === 0) {
-    return <EmptyState title="No users yet" description="Invite a teammate to get started." />;
+    return <EmptyState title={t("users.emptyTitle")} description={t("users.emptyDescription")} />;
   }
 
   return (
     <TableScroll>
       <Table data-testid="users-table">
-        <caption className="sr-only">Team members with edit and delete controls.</caption>
+        <caption className="sr-only">{t("users.caption")}</caption>
         <TableHead>
           <tr>
-            {COLUMNS.map((label) => (
-              <TableHeaderCell key={label}>{label}</TableHeaderCell>
+            {COLUMNS.map((key) => (
+              <TableHeaderCell key={key}>{t(`users.columns.${key}`)}</TableHeaderCell>
             ))}
-            <TableHeaderCell className="text-right">
-              <span className="sr-only">Actions</span>
+            <TableHeaderCell className="text-end">
+              <span className="sr-only">{t("users.columns.actions")}</span>
             </TableHeaderCell>
           </tr>
         </TableHead>
@@ -51,31 +54,31 @@ export function UsersTable({ users, onEdit, onDelete }: UsersTableProps) {
                 </span>
               </TableCell>
               <TableCell className="whitespace-nowrap">{user.email}</TableCell>
-              <TableCell>{user.role}</TableCell>
+              <TableCell>{t(`role.${user.role}`)}</TableCell>
               <TableCell className="whitespace-nowrap">{user.team}</TableCell>
               <TableCell>
                 <StatusBadge status={user.status} />
               </TableCell>
               <TableCell className="whitespace-nowrap">{formatDate(user.lastLoginAt)}</TableCell>
-              <TableCell className="text-right">
+              <TableCell className="text-end">
                 <span className="flex justify-end gap-2">
                   <Button
                     variant="outline"
                     size="sm"
                     data-testid="user-edit"
                     onClick={() => onEdit(user)}
-                    aria-label={`Edit ${user.name}`}
+                    aria-label={t("users.editLabel", { name: user.name })}
                   >
-                    Edit
+                    {t("users.edit")}
                   </Button>
                   <Button
                     variant="danger"
                     size="sm"
                     data-testid="user-delete"
                     onClick={() => onDelete(user)}
-                    aria-label={`Delete ${user.name}`}
+                    aria-label={t("users.deleteLabel", { name: user.name })}
                   >
-                    Delete
+                    {t("users.delete")}
                   </Button>
                 </span>
               </TableCell>

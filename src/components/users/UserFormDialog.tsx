@@ -12,6 +12,7 @@ import {
   type UserFormValues,
 } from "@/lib/schemas";
 import type { User, UserRole } from "@/types";
+import { useTranslation } from "react-i18next";
 
 const ROLES: UserRole[] = ["Admin", "Manager", "Viewer"];
 
@@ -49,6 +50,7 @@ function UserForm({
 }: Pick<UserFormDialogProps, "editing" | "onSubmit" | "onCancel">) {
   const [values, setValues] = useState<UserFormValues>(() => toValues(editing));
   const [errors, setErrors] = useState<Partial<Record<UserFormField, string>>>({});
+  const { t } = useTranslation();
   const ids = useId();
 
   // Exactly one error carries the `form-error` hook, so the locator stays unique.
@@ -75,20 +77,22 @@ function UserForm({
         role="alert"
         className="mt-1.5 text-[13px] text-bad"
       >
-        {errors[field]}
+        {t(errors[field]!)}
       </p>
     ) : null;
 
   return (
     <>
-      <p className="text-sm text-ink-muted">{editing ? "Edit user" : "New user"}</p>
-      <DialogTitle className="mt-0.5 mb-6 pr-12 text-2xl leading-8 font-bold tracking-[-0.02em] text-ink">
-        {editing ? editing.name : "Invite a teammate"}
+      <p className="text-sm text-ink-muted">
+        {editing ? t("users.form.editEyebrow") : t("users.form.createEyebrow")}
+      </p>
+      <DialogTitle className="mt-0.5 mb-6 pe-12 text-2xl leading-8 font-bold tracking-[-0.02em] text-ink">
+        {editing ? editing.name : t("users.form.createTitle")}
       </DialogTitle>
 
       <form data-testid="user-form" onSubmit={handleSubmit} noValidate className="space-y-5">
         <div>
-          <Label htmlFor={`${ids}-name`}>Name</Label>
+          <Label htmlFor={`${ids}-name`}>{t("users.form.name")}</Label>
           <Input
             id={`${ids}-name`}
             name="name"
@@ -102,7 +106,7 @@ function UserForm({
         </div>
 
         <div>
-          <Label htmlFor={`${ids}-email`}>Email</Label>
+          <Label htmlFor={`${ids}-email`}>{t("users.form.email")}</Label>
           <Input
             id={`${ids}-email`}
             name="email"
@@ -117,7 +121,7 @@ function UserForm({
         </div>
 
         <div>
-          <Label htmlFor={`${ids}-role`}>Role</Label>
+          <Label htmlFor={`${ids}-role`}>{t("users.form.role")}</Label>
           <Select
             id={`${ids}-role`}
             name="role"
@@ -127,7 +131,7 @@ function UserForm({
           >
             {ROLES.map((role) => (
               <option key={role} value={role}>
-                {role}
+                {t(`role.${role}`)}
               </option>
             ))}
           </Select>
@@ -135,7 +139,7 @@ function UserForm({
         </div>
 
         <div>
-          <Label htmlFor={`${ids}-team`}>Team</Label>
+          <Label htmlFor={`${ids}-team`}>{t("users.form.team")}</Label>
           <Input
             id={`${ids}-team`}
             name="team"
@@ -149,10 +153,10 @@ function UserForm({
 
         <div className="flex justify-end gap-2.5 pt-1">
           <Button type="button" variant="outline" data-testid="user-cancel" onClick={onCancel}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button type="submit" data-testid="user-save">
-            {editing ? "Save changes" : "Create user"}
+            {editing ? t("users.form.save") : t("users.form.create")}
           </Button>
         </div>
       </form>

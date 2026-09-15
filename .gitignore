@@ -9,3 +9,6 @@ blob-report
 screenshots
 .vercel
 .env*
+!.env
+!.env.example
+tests/.auth

@@ -94,7 +94,30 @@ Stack: React 19 + TypeScript + Vite · TailwindCSS · shadcn/ui · Recharts · Z
 - [x] `npm run screenshot` → compare against `design/`, iterate until matched
 - [x] Final review of shared-component reuse (no duplicated table/drawer/badge logic)
 
-## 11. Deployment
-- [ ] Vercel CLI authenticated
-- [ ] Production build deployed
-- [ ] Live URL verified (acceptance run against the deployed site)
+## 11. Authentication
+- [x] `.env` / `.env.example` hold `VITE_AUTH_USERNAME` / `VITE_AUTH_PASSWORD` (`root` / `root`)
+- [x] `lib/env.ts` validates the env pair with Zod and fails loudly if absent
+- [x] `LoginPage` — centred card, username + password, inline error, demo-credential hint
+- [x] `useAuth` context: `signIn` / `signOut` / `isAuthenticated`, session in `localStorage`
+- [x] App is gated: signed-out users only ever see the login screen
+- [x] Sign-out control in the top bar
+- [x] `tests/auth.spec.ts` — gate, wrong credentials, success, reload persistence, sign-out
+- [x] Playwright seeds an authenticated session so `tests/acceptance.spec.ts` stays untouched
+- [ ] NOTE: `VITE_*` values are inlined into the client bundle — demo gate, not real auth
+
+## 12. Internationalisation
+- [x] `i18next` + `react-i18next`, English source locale and French translation
+- [x] `Translation` type makes every locale structurally match the English source
+- [x] All interface strings translated: nav, KPIs, chart, tables, dialogs, forms, empty states, login
+- [x] Zod validation messages carry i18n keys, resolved at render
+- [x] Status and role labels translated; filtering and sorting still run on the raw data
+- [x] Dates follow the active locale; currency stays en-US/USD (the data's currency)
+- [x] `useLanguage` keeps `<html lang>`/`dir` in sync; choice persisted to `localStorage`
+- [x] `LanguageToggle` in the top bar and on the login screen
+- [x] Directional utilities use logical properties (`ms`/`me`/`ps`/`pe`/`start`/`end`)
+- [x] `tests/i18n.spec.ts` — switching, persistence, translated form validation
+
+## 13. Deployment
+- [x] Vercel CLI authenticated (`abdelfatahashour4`), project linked as `pulseboard`
+- [ ] Production deploy — blocked, `fetch failed` during upload; retry was interrupted
+- [ ] Live URL verified

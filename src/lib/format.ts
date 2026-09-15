@@ -1,4 +1,9 @@
+import i18n from "@/i18n";
 import type { KpiFormat } from "@/types";
+
+/** BCP 47 tag for the active UI language, used for date formatting. */
+const LOCALES: Record<string, string> = { en: "en-US", fr: "fr-FR" };
+const activeLocale = () => LOCALES[i18n.language] ?? "en-US";
 
 /** `$85,370` — whole dollars, no cents. */
 export const formatCurrency = (value: number) =>
@@ -33,12 +38,15 @@ export const formatKpiValue = (value: number, format: KpiFormat) => {
   }
 };
 
-/** `2026-08-31` -> `Aug 31, 2026`; null -> em dash. */
+/**
+ * `2026-08-31` -> `Aug 31, 2026` (`31 août 2026` in French); null -> em dash.
+ * Money stays in en-US/USD — it is the currency of the data, not of the reader.
+ */
 export const formatDate = (iso: string | null) => {
   if (!iso) return "—";
   const date = new Date(iso.length === 10 ? `${iso}T00:00:00Z` : iso);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString(activeLocale(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -49,11 +57,15 @@ export const formatDate = (iso: string | null) => {
 /** `2026-08` -> `Aug` for chart ticks. */
 export const formatMonthShort = (month: string) => {
   const date = new Date(`${month}-01T00:00:00Z`);
-  return date.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" });
+  return date.toLocaleDateString(activeLocale(), { month: "short", timeZone: "UTC" });
 };
 
 /** `2026-08` -> `Aug 2026` for chart tooltips. */
 export const formatMonthLong = (month: string) => {
   const date = new Date(`${month}-01T00:00:00Z`);
-  return date.toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+  return date.toLocaleDateString(activeLocale(), {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 };

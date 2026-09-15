@@ -3,6 +3,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 export const Dialog = DialogPrimitive.Root;
 export const DialogTitle = DialogPrimitive.Title;
@@ -37,7 +38,9 @@ export interface ModalContentProps
 export const ModalContent = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Content>,
   ModalContentProps
->(({ className, children, closeTestId, ...props }, ref) => (
+>(({ className, children, closeTestId, ...props }, ref) => {
+  const { t } = useTranslation();
+  return (
   <DialogPrimitive.Portal>
     <Overlay />
     <DialogPrimitive.Content
@@ -56,8 +59,8 @@ export const ModalContent = React.forwardRef<
             variant="outline"
             size="icon"
             data-testid={closeTestId}
-            className="absolute top-6 right-6 text-ink"
-            aria-label="Close dialog"
+            className="absolute top-6 end-6 text-ink"
+            aria-label={t("common.close")}
           >
             <X className="size-4" aria-hidden="true" />
           </Button>
@@ -65,6 +68,7 @@ export const ModalContent = React.forwardRef<
       ) : null}
       {children}
     </DialogPrimitive.Content>
-  </DialogPrimitive.Portal>
-));
+    </DialogPrimitive.Portal>
+  );
+});
 ModalContent.displayName = "ModalContent";

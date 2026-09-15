@@ -12,6 +12,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency, formatCurrencyCompact, formatMonthLong, formatMonthShort } from "@/lib/format";
 import type { RevenuePoint } from "@/types";
+import { useTranslation } from "react-i18next";
 
 const AXIS_TICKS = [0, 25_000, 50_000, 75_000, 100_000];
 
@@ -19,10 +20,12 @@ function ChartTooltip({
   active,
   payload,
   label,
+  labels,
 }: {
   active?: boolean;
   payload?: { dataKey?: string | number; value?: number }[];
   label?: string;
+  labels: { revenue: string; target: string };
 }) {
   if (!active || !payload?.length) return null;
   const revenue = payload.find((entry) => entry.dataKey === "revenue")?.value;
@@ -31,8 +34,12 @@ function ChartTooltip({
   return (
     <div className="card px-3 py-2 text-[13px] shadow-md">
       <p className="font-semibold text-ink">{formatMonthLong(String(label))}</p>
-      <p className="mt-1 text-ink-soft">Revenue {formatCurrency(revenue ?? 0)}</p>
-      <p className="text-ink-soft">Target {formatCurrency(target ?? 0)}</p>
+      <p className="mt-1 text-ink-soft">
+        {labels.revenue} {formatCurrency(revenue ?? 0)}
+      </p>
+      <p className="text-ink-soft">
+        {labels.target} {formatCurrency(target ?? 0)}
+      </p>
     </div>
   );
 }
@@ -51,25 +58,35 @@ function LegendSwatch({ shape, color, label }: { shape: "square" | "dot"; color:
 }
 
 export function RevenueChart({ series }: { series: RevenuePoint[] }) {
+  const { t } = useTranslation();
   const latest = series.at(-1);
   const summary = latest
-    ? `Revenue against target for the last ${series.length} months. Latest month ${formatMonthLong(
-        latest.month,
-      )}: revenue ${formatCurrency(latest.revenue)} against a target of ${formatCurrency(latest.target)}.`
-    : "Revenue against target.";
+    ? t("chart.summary", {
+        count: series.length,
+        month: formatMonthLong(latest.month),
+        revenue: formatCurrency(latest.revenue),
+        target: formatCurrency(latest.target),
+      })
+    : t("chart.summaryFallback");
 
   return (
     <Card>
       <CardHeader className="block">
-        <CardTitle>Revenue vs target</CardTitle>
-        <CardDescription>Monthly recurring revenue, last 12 months</CardDescription>
+        <CardTitle>{t("chart.title")}</CardTitle>
+        <CardDescription>{t("chart.subtitle")}</CardDescription>
         <div className="mt-3 flex items-center gap-5">
-          <LegendSwatch shape="square" color="var(--color-bar-accent)" label="Revenue" />
-          <LegendSwatch shape="dot" color="var(--color-target)" label="Target" />
+          <LegendSwatch shape="square" color="var(--color-bar-accent)" label={t("chart.revenue")} />
+          <LegendSwatch shape="dot" color="var(--color-target)" label={t("chart.target")} />
         </div>
       </CardHeader>
       <CardContent className="pt-4">
-        <div data-testid="revenue-chart" role="img" aria-label={summary} className="h-[280px] w-full">
+        <div
+          data-testid="revenue-chart"
+          role="img"
+          dir="ltr"
+          aria-label={summary}
+          className="h-[280px] w-full"
+        >
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={series} barCategoryGap="28%" margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
               <CartesianGrid stroke="var(--color-hairline)" vertical={false} />
@@ -91,7 +108,7 @@ export function RevenueChart({ series }: { series: RevenuePoint[] }) {
                 tick={{ fill: "var(--color-ink-muted)", fontSize: 13 }}
               />
               <Tooltip
-                content={<ChartTooltip />}
+                content={<ChartTooltip labels={{ revenue: t("chart.revenue"), target: t("chart.target") }} />}
                 cursor={{ fill: "var(--color-brand-50)", radius: 4 }}
               />
               <Bar dataKey="revenue" name="Revenue" maxBarSize={48} radius={[4, 4, 0, 0]} isAnimationActive={false}>

@@ -57,10 +57,10 @@ export const dashboardDataSchema = z.object({
   users: z.array(userSchema),
 });
 
-/** The create/edit user form. Messages are what the user sees inline. */
+/** The create/edit user form. Messages are i18n keys, translated on render. */
 export const userFormSchema = z.object({
-  name: z.string().trim().min(1, "Name is required."),
-  email: z.email("Enter a valid email address."),
+  name: z.string().trim().min(1, "validation.nameRequired"),
+  email: z.email("validation.emailInvalid"),
   role: z.enum(["Admin", "Manager", "Viewer"]),
   team: z.string().trim(),
 });

@@ -1,28 +1,40 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { TopNav, type PageKey } from "@/components/layout/TopNav";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { UsersPage } from "@/pages/UsersPage";
+import { LoginPage } from "@/pages/LoginPage";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useUsers } from "@/hooks/useUsers";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useAuth } from "@/hooks/useAuth";
 
 /**
  * PulseBoard shell. Both pages live under one state root so Users edits survive
- * navigating to the Dashboard and back.
+ * navigating to the Dashboard and back. Everything sits behind the sign-in gate.
  */
 export default function App() {
+  const { t } = useTranslation();
   const [page, setPage] = useState<PageKey>("dashboard");
+  const { isAuthenticated, signOut } = useAuth();
   const state = useDashboardData();
   const { users, create, update, remove } = useUsers(state.data?.users);
+
+  // Keeps <html lang>/<dir> in step with the active language.
+  useLanguage();
+
+  if (!isAuthenticated) return <LoginPage />;
 
   return (
     <div className="min-h-dvh bg-canvas">
       <TopNav
         current={page}
         onNavigate={setPage}
+        onSignOut={signOut}
         period={
           state.data
             ? page === "dashboard"
-              ? `${state.data.meta.period} · all regions`
+              ? t("app.allRegions", { period: state.data.meta.period })
               : state.data.meta.period
             : undefined
         }
@@ -31,13 +43,13 @@ export default function App() {
       <main className="px-2 py-6 sm:px-4 lg:px-8">
         {state.status === "loading" ? (
           <p className="py-20 text-center text-sm text-ink-muted" role="status">
-            Loading PulseBoard…
+            {t("common.loading")}
           </p>
         ) : null}
 
         {state.status === "error" ? (
           <p className="py-20 text-center text-sm text-bad" role="alert">
-            Could not load dashboard data: {state.error}
+            {t("common.loadError", { message: state.error })}
           </p>
         ) : null}
 
