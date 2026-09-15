@@ -38,11 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signIn = useCallback((username: string, password: string) => {
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
     const ok =
-      username.trim() === authConfig.username && password === authConfig.password;
+      trimmedUsername === authConfig.username && trimmedPassword === authConfig.password;
     if (!ok) return false;
 
-    const next: Session = { username: username.trim() };
+    const next: Session = { username: trimmedUsername };
     setSession(next);
     try {
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(next));

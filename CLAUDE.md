@@ -8,22 +8,17 @@ React 19 + TypeScript + Vite. Playwright for tests.
 
 ## Styling
 
-StyleX. No Tailwind, no `className` strings, no `cn()`.
+StyleX, with a design system on top in `src/design/` — read
+`src/design/README.md` before styling anything.
 
-- Tokens: `src/styles/theme.css` holds the raw values as CSS custom properties,
-  light and dark. `src/styles/tokens.stylex.ts` exposes them as typed StyleX
-  variables — import `color`, `font`, `radius`, `shadow` from there, never a
-  literal hex.
-- Dark mode is `[data-theme]` on `<html>`, set before first paint by the inline
-  script in `index.html`. Components never reference the theme; re-binding the
-  custom properties does the work.
-- Shared bits: `styles/breakpoints.stylex.ts` (`bp.sm`/`bp.lg`/`bp.xl`),
-  `styles/type.stylex.ts` (`leading.*`), `styles/common.ts` (`srOnly`, `card`,
-  `tabularNums`).
-- A component that takes style overrides does it with an `sx?: stylex.StyleXStyles`
-  prop applied last: `{...stylex.props(styles.base, sx)}`.
-- `src/styles/global.css` is the only hand-written CSS: the element reset (in the
-  `reset` cascade layer, which `vite.config.ts` declares ahead of StyleX's layers
-  so component styles win) and the dialog animations, which key off Radix's
-  `data-state` attribute — StyleX handles pseudo-classes and media queries, but
-  not arbitrary attribute selectors.
+- No raw values in components: no hex, no `14px`, no `600`. Import from
+  `@/design/tokens/*`. If a value is missing, widen the scale.
+- Layout is `Stack` / `Inline` / `Grid` / `Box`; text is `Text` with a `variant`
+  from the type scale. Overrides go through an `sx` prop, applied last.
+- Components with variants use `recipe()`; the type style goes first in `base`.
+- Two StyleX traps documented in the README: styles merge per property (so a
+  responsive override must restate its `default`), and media queries must be
+  literal strings, never a shared constant.
+- `src/design/global.css` is the only hand-written CSS — the element reset (in a
+  `reset` cascade layer declared ahead of StyleX's) and the dialog animations,
+  which key off Radix `data-state` attributes that StyleX cannot target.

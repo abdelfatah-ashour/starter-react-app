@@ -1,86 +1,107 @@
 import * as React from "react";
 import * as stylex from "@stylexjs/stylex";
-import { color } from "@/styles/tokens.stylex";
-import { leading } from "@/styles/type.stylex";
+import { bg, fg, stroke } from "@/design/tokens/color.stylex";
+import { border, radius } from "@/design/tokens/shape.stylex";
+import { control, icon } from "@/design/tokens/size.stylex";
+import { duration } from "@/design/tokens/motion.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { text } from "@/design/text";
+import { recipe, type VariantProps } from "@/design/recipe";
+import { weight } from "@/design/tokens/typography.stylex";
 
 const styles = stylex.create({
   base: {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
+    gap: space[6],
     whiteSpace: "nowrap",
-    borderRadius: 8,
-    borderWidth: 0,
+    borderRadius: radius.lg,
+    borderWidth: border.none,
     borderStyle: "solid",
     borderColor: "transparent",
-    fontWeight: 600,
+    fontWeight: weight.semibold,
     transitionProperty: "background-color, color, border-color",
-    transitionDuration: "150ms",
+    transitionDuration: duration.base,
     pointerEvents: { default: null, ":disabled": "none" },
     opacity: { default: null, ":disabled": 0.5 },
   },
+
   primary: {
-    backgroundColor: { default: color.brand600, ":hover": color.brand700 },
-    color: color.onSolid,
+    backgroundColor: { default: bg.accentSolid, ":hover": bg.accentSolidHover },
+    color: fg.onSolid,
   },
   outline: {
-    borderWidth: 1,
-    borderColor: color.hairline,
-    backgroundColor: { default: color.surface, ":hover": color.canvas },
-    color: { default: color.inkSoft, ":hover": color.ink },
+    borderWidth: border.thin,
+    borderColor: stroke.default,
+    backgroundColor: { default: bg.surface, ":hover": bg.canvas },
+    color: { default: fg.muted, ":hover": fg.default },
   },
   danger: {
-    borderWidth: 1,
-    borderColor: color.hairline,
-    backgroundColor: { default: color.surface, ":hover": color.badSoft },
-    color: color.bad,
+    borderWidth: border.thin,
+    borderColor: stroke.default,
+    backgroundColor: { default: bg.surface, ":hover": bg.dangerSoft },
+    color: fg.danger,
   },
   dangerSolid: {
-    backgroundColor: { default: color.dangerSolid, ":hover": color.dangerSolidHover },
-    color: color.onSolid,
+    backgroundColor: { default: bg.dangerSolid, ":hover": bg.dangerSolidHover },
+    color: fg.onSolid,
   },
   ghost: {
-    backgroundColor: { default: "transparent", ":hover": color.canvas },
-    color: { default: color.inkMuted, ":hover": color.ink },
+    backgroundColor: { default: "transparent", ":hover": bg.canvas },
+    color: { default: fg.subtle, ":hover": fg.default },
   },
+
   sm: {
-    height: 34,
-    paddingInline: 12,
-    fontSize: 14,
-    lineHeight: leading.sm,
-    fontWeight: 500,
+    height: control.sm,
+    paddingInline: space[12],
+    fontWeight: weight.medium,
   },
   md: {
-    height: 40,
-    paddingInline: 16,
-    fontSize: 14,
-    lineHeight: leading.sm,
+    height: control.md,
+    paddingInline: space[16],
   },
-  icon: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
+  square: {
+    width: control.square,
+    height: control.square,
+    borderRadius: radius.xxxl,
   },
 });
 
-export type ButtonVariant = "primary" | "outline" | "danger" | "dangerSolid" | "ghost";
-export type ButtonSize = "sm" | "md" | "icon";
+const button = recipe({
+  base: [text.body, styles.base],
+  variants: {
+    variant: {
+      primary: styles.primary,
+      outline: styles.outline,
+      danger: styles.danger,
+      dangerSolid: styles.dangerSolid,
+      ghost: styles.ghost,
+    },
+    size: {
+      sm: styles.sm,
+      md: styles.md,
+      square: styles.square,
+    },
+  },
+  defaults: { variant: "primary", size: "md" },
+});
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  /** Extra StyleX styles, applied after the variant so they win. */
+/** The size a Button's icon should be. Exported so callers stay on the scale. */
+export const buttonIcon = stylex.create({
+  sm: { width: icon.sm, height: icon.sm },
+  md: { width: icon.md, height: icon.md },
+});
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof button.variants> {
   sx?: stylex.StyleXStyles;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "primary", size = "md", sx, ...props }, ref) => (
-    <button
-      ref={ref}
-      {...props}
-      {...stylex.props(styles.base, styles[variant], styles[size], sx)}
-    />
+  ({ variant, size, sx, ...props }, ref) => (
+    <button ref={ref} {...props} {...stylex.props(...button({ variant, size }), sx)} />
   ),
 );
 Button.displayName = "Button";

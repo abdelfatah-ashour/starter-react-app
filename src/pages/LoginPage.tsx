@@ -9,78 +9,35 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { useAuth } from "@/hooks/useAuth";
 import { authConfig } from "@/lib/env";
-import { color } from "@/styles/tokens.stylex";
-import { leading } from "@/styles/type.stylex";
+import { Box, Inline, Stack, Text } from "@/design/primitives";
+import { bg } from "@/design/tokens/color.stylex";
+import { radius } from "@/design/tokens/shape.stylex";
+import { space } from "@/design/tokens/space.stylex";
 
 const styles = stylex.create({
   page: {
-    display: "flex",
     minHeight: "100dvh",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 24,
-    backgroundColor: color.canvas,
-    paddingInline: 16,
-    paddingBlock: 40,
-  },
-  brand: {
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
+    backgroundColor: bg.canvas,
+    paddingInline: space[16],
+    paddingBlock: space[40],
   },
   mark: {
-    width: 32,
-    height: 32,
+    width: space[32],
+    height: space[32],
     flexShrink: 0,
-    borderRadius: 10,
-    backgroundColor: color.brand500,
-  },
-  wordmark: {
-    fontSize: 20,
-    lineHeight: leading.xl,
-    fontWeight: 700,
-    letterSpacing: "-0.01em",
-    color: color.ink,
+    borderRadius: radius.xxl,
+    backgroundColor: bg.accentMark,
   },
   card: {
     width: "100%",
     maxWidth: 380,
-    padding: 28,
+    padding: space[28],
   },
-  title: {
-    fontSize: 19,
-    lineHeight: "24px",
-    fontWeight: 700,
-    letterSpacing: "-0.01em",
-    color: color.ink,
-  },
-  subtitle: {
-    marginTop: 6,
-    fontSize: 14,
-    lineHeight: leading.sm,
-    color: color.inkMuted,
-  },
-  form: {
-    marginTop: 24,
-    display: "flex",
-    flexDirection: "column",
-    gap: 16,
-  },
-  control: { marginTop: 6 },
-  error: { fontSize: 13, color: color.bad },
+  subtitle: { marginTop: space[6] },
+  form: { marginTop: space[24] },
+  control: { marginTop: space[6] },
   submit: { width: "100%" },
-  hint: {
-    marginTop: 20,
-    textAlign: "center",
-    fontSize: 13,
-    color: color.inkMuted,
-  },
-  toggles: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-  },
+  hint: { marginTop: space[20] },
 });
 
 export function LoginPage() {
@@ -90,29 +47,37 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLElement>) => {
     event.preventDefault();
     setError(!signIn(username, password));
   };
 
   return (
-    <div data-testid="login-page" {...stylex.props(styles.page)}>
-      <div {...stylex.props(styles.brand)}>
+    <Stack data-testid="login-page" align="center" justify="center" gap={24} sx={styles.page}>
+      <Inline gap={12}>
         <span aria-hidden="true" {...stylex.props(styles.mark)} />
-        <h1 {...stylex.props(styles.wordmark)}>{t("app.name")}</h1>
-      </div>
+        <Text as="h1" variant="titleMd" tone="default">
+          {t("app.name")}
+        </Text>
+      </Inline>
 
       <Card sx={styles.card}>
-        <h2 {...stylex.props(styles.title)}>{t("login.title")}</h2>
-        <p {...stylex.props(styles.subtitle)}>{t("login.subtitle")}</p>
+        <Text as="h2" variant="titleSm" tone="default">
+          {t("login.title")}
+        </Text>
+        <Text tone="subtle" sx={styles.subtitle}>
+          {t("login.subtitle")}
+        </Text>
 
-        <form
+        <Stack
+          as="form"
           data-testid="login-form"
           onSubmit={handleSubmit}
           noValidate
-          {...stylex.props(styles.form)}
+          gap={16}
+          sx={styles.form}
         >
-          <div>
+          <Box>
             <Label htmlFor="login-username">{t("login.username")}</Label>
             <Input
               id="login-username"
@@ -123,9 +88,9 @@ export function LoginPage() {
               onChange={(event) => setUsername(event.target.value)}
               sx={styles.control}
             />
-          </div>
+          </Box>
 
-          <div>
+          <Box>
             <Label htmlFor="login-password">{t("login.password")}</Label>
             <Input
               id="login-password"
@@ -137,28 +102,28 @@ export function LoginPage() {
               onChange={(event) => setPassword(event.target.value)}
               sx={styles.control}
             />
-          </div>
+          </Box>
 
           {error ? (
-            <p data-testid="login-error" role="alert" {...stylex.props(styles.error)}>
+            <Text data-testid="login-error" role="alert" variant="bodySm" tone="danger">
               {t("login.error")}
-            </p>
+            </Text>
           ) : null}
 
           <Button type="submit" data-testid="login-submit" sx={styles.submit}>
             {t("login.submit")}
           </Button>
-        </form>
+        </Stack>
 
-        <p {...stylex.props(styles.hint)}>
+        <Text variant="bodySm" tone="subtle" align="center" sx={styles.hint}>
           {t("login.hint", { username: authConfig.username, password: authConfig.password })}
-        </p>
+        </Text>
       </Card>
 
-      <div {...stylex.props(styles.toggles)}>
+      <Inline gap={8}>
         <LanguageToggle />
         <ThemeToggle />
-      </div>
-    </div>
+      </Inline>
+    </Stack>
   );
 }

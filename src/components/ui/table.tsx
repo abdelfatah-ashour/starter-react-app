@@ -1,8 +1,10 @@
 import * as React from "react";
 import * as stylex from "@stylexjs/stylex";
-import { color } from "@/styles/tokens.stylex";
-import { bp } from "@/styles/breakpoints.stylex";
-import { leading } from "@/styles/type.stylex";
+import { fg, stroke } from "@/design/tokens/color.stylex";
+import { border } from "@/design/tokens/shape.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { leadings, text } from "@/design/text";
+import { weight } from "@/design/tokens/typography.stylex";
 
 const styles = stylex.create({
   scroll: {
@@ -12,34 +14,33 @@ const styles = stylex.create({
   },
   table: {
     width: "100%",
+    /* Below this the columns stop being readable, so the wrapper scrolls instead. */
     minWidth: 640,
     textAlign: "start",
-    fontSize: 14,
-    lineHeight: leading.sm,
   },
   row: {
-    borderWidth: 0,
-    borderBottomWidth: { default: 1, ":last-child": 0 },
+    borderWidth: border.none,
+    borderBottomWidth: { default: border.thin, ":last-child": border.none },
     borderStyle: "solid",
-    borderColor: color.hairline,
+    borderColor: stroke.default,
   },
   headerCell: {
-    borderWidth: 0,
-    borderBottomWidth: 1,
+    borderWidth: border.none,
+    borderBottomWidth: border.thin,
     borderStyle: "solid",
-    borderColor: color.hairline,
-    paddingInline: { default: 8, [bp.xl]: 12 },
-    paddingBottom: 10,
+    borderColor: stroke.default,
+    paddingInline: { default: space[8], ["@media (min-width: 1280px)"]: space[12] },
+    paddingBottom: space[10],
     textAlign: "start",
-    fontSize: 13,
-    fontWeight: 400,
-    color: color.inkMuted,
+    fontWeight: weight.regular,
+    color: fg.subtle,
   },
   cell: {
-    paddingInline: { default: 8, [bp.xl]: 12 },
+    paddingInline: { default: space[8], ["@media (min-width: 1280px)"]: space[12] },
+    /* Half of the 14px row rhythm; not a step on the spacing scale. */
     paddingBlock: 7,
     verticalAlign: "middle",
-    color: color.inkSoft,
+    color: fg.muted,
   },
 });
 
@@ -47,12 +48,13 @@ interface Styled {
   sx?: stylex.StyleXStyles;
 }
 
+/** Lets a wide table scroll sideways instead of forcing the page to. */
 export function TableScroll({ sx, ...props }: React.HTMLAttributes<HTMLDivElement> & Styled) {
   return <div {...props} {...stylex.props(styles.scroll, sx)} />;
 }
 
 export function Table({ sx, ...props }: React.TableHTMLAttributes<HTMLTableElement> & Styled) {
-  return <table {...props} {...stylex.props(styles.table, sx)} />;
+  return <table {...props} {...stylex.props(text.body, styles.table, sx)} />;
 }
 
 export function TableHead(props: React.HTMLAttributes<HTMLTableSectionElement>) {
@@ -71,7 +73,7 @@ export function TableHeaderCell({
   sx,
   ...props
 }: React.ThHTMLAttributes<HTMLTableCellElement> & Styled) {
-  return <th scope="col" {...props} {...stylex.props(styles.headerCell, sx)} />;
+  return <th scope="col" {...props} {...stylex.props(text.bodySm, leadings.inherit, styles.headerCell, sx)} />;
 }
 
 export function TableCell({

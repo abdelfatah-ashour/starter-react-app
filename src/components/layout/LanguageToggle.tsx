@@ -3,50 +3,53 @@ import { useTranslation } from "react-i18next";
 import { Languages } from "lucide-react";
 import { LANGUAGES } from "@/i18n";
 import { useLanguage } from "@/hooks/useLanguage";
-import { color, shadow } from "@/styles/tokens.stylex";
+import { Inline } from "@/design/primitives";
+import { bg, fg } from "@/design/tokens/color.stylex";
+import { shadow } from "@/design/tokens/elevation.stylex";
+import { duration } from "@/design/tokens/motion.stylex";
+import { radius } from "@/design/tokens/shape.stylex";
+import { icon } from "@/design/tokens/size.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { text, weights } from "@/design/text";
 
 const styles = stylex.create({
   group: {
-    display: "flex",
-    alignItems: "center",
-    gap: 2,
-    borderRadius: 8,
-    backgroundColor: color.canvas,
-    padding: 2,
+    borderRadius: radius.lg,
+    backgroundColor: bg.canvas,
+    padding: space[2],
   },
   icon: {
-    marginInlineStart: 6,
-    width: 16,
-    height: 16,
+    marginInlineStart: space[6],
+    width: icon.sm,
+    height: icon.sm,
     flexShrink: 0,
-    color: color.inkMuted,
+    color: fg.subtle,
   },
   option: {
-    borderRadius: 6,
-    paddingInline: 8,
-    paddingBlock: 4,
-    fontSize: 13,
-    fontWeight: 500,
+    borderRadius: radius.md,
+    paddingInline: space[8],
+    paddingBlock: space[4],
     transitionProperty: "background-color, color",
-    transitionDuration: "150ms",
+    transitionDuration: duration.base,
   },
   active: {
-    backgroundColor: color.surface,
-    color: color.ink,
+    backgroundColor: bg.surface,
+    color: fg.default,
     boxShadow: shadow.raised,
   },
   inactive: {
     backgroundColor: "transparent",
-    color: { default: color.inkMuted, ":hover": color.ink },
+    color: { default: fg.subtle, ":hover": fg.default },
   },
 });
 
+/** Segmented control for the interface language. */
 export function LanguageToggle() {
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div role="group" aria-label={t("nav.language.label")} {...stylex.props(styles.group)}>
+    <Inline role="group" aria-label={t("nav.language.label")} gap={2} sx={styles.group}>
       <Languages aria-hidden="true" {...stylex.props(styles.icon)} />
       {LANGUAGES.map((option) => {
         const active = language === option.code;
@@ -57,12 +60,17 @@ export function LanguageToggle() {
             data-testid={`lang-${option.code}`}
             aria-pressed={active}
             onClick={() => setLanguage(option.code)}
-            {...stylex.props(styles.option, active ? styles.active : styles.inactive)}
+            {...stylex.props(
+              text.bodySm,
+              weights.medium,
+              styles.option,
+              active ? styles.active : styles.inactive,
+            )}
           >
             {option.code.toUpperCase()}
           </button>
         );
       })}
-    </div>
+    </Inline>
   );
 }

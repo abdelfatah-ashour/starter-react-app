@@ -1,32 +1,20 @@
 import * as React from "react";
 import * as stylex from "@stylexjs/stylex";
-import { color } from "@/styles/tokens.stylex";
-import { common } from "@/styles/common";
+import { Box, Inline, Text } from "@/design/primitives";
+import { space } from "@/design/tokens/space.stylex";
+import { surface } from "@/design/surface";
 
 const styles = stylex.create({
   header: {
-    display: "flex",
-    flexWrap: "wrap",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    gap: 12,
-    paddingInline: 20,
-    paddingTop: 20,
-  },
-  title: {
-    fontSize: 15,
-    lineHeight: "20px",
-    fontWeight: 700,
-    color: color.ink,
+    paddingInline: space[20],
+    paddingTop: space[20],
   },
   description: {
-    marginTop: 2,
-    fontSize: 13,
-    color: color.inkMuted,
+    marginTop: space[2],
   },
   content: {
-    paddingInline: 20,
-    paddingBottom: 20,
+    paddingInline: space[20],
+    paddingBottom: space[20],
   },
 });
 
@@ -34,25 +22,24 @@ interface Styled {
   sx?: stylex.StyleXStyles;
 }
 
+/** A panel on the canvas. */
 export function Card({ sx, ...props }: React.HTMLAttributes<HTMLDivElement> & Styled) {
-  return <div {...props} {...stylex.props(common.card, sx)} />;
+  return <Box {...props} sx={[surface.card, sx]} />;
 }
 
+/** Title and description on the left, actions on the right, wrapping when tight. */
 export function CardHeader({ sx, ...props }: React.HTMLAttributes<HTMLDivElement> & Styled) {
-  return <div {...props} {...stylex.props(styles.header, sx)} />;
+  return <Inline wrap align="start" justify="between" gap={12} {...props} sx={[styles.header, sx]} />;
 }
 
-export function CardTitle({ sx, ...props }: React.HTMLAttributes<HTMLHeadingElement> & Styled) {
-  return <h2 {...props} {...stylex.props(styles.title, sx)} />;
+export function CardTitle(props: React.HTMLAttributes<HTMLHeadingElement>) {
+  return <Text as="h2" variant="heading" tone="default" {...props} />;
 }
 
-export function CardDescription({
-  sx,
-  ...props
-}: React.HTMLAttributes<HTMLParagraphElement> & Styled) {
-  return <p {...props} {...stylex.props(styles.description, sx)} />;
+export function CardDescription(props: React.HTMLAttributes<HTMLParagraphElement>) {
+  return <Text variant="bodySm" tone="subtle" sx={styles.description} {...props} />;
 }
 
 export function CardContent({ sx, ...props }: React.HTMLAttributes<HTMLDivElement> & Styled) {
-  return <div {...props} {...stylex.props(styles.content, sx)} />;
+  return <Box {...props} sx={[styles.content, sx]} />;
 }

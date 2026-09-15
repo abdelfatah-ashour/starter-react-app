@@ -15,32 +15,23 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { formatDate } from "@/lib/format";
 import type { User } from "@/types";
-import { color } from "@/styles/tokens.stylex";
-import { common } from "@/styles/common";
+import { Inline, Text, VisuallyHidden } from "@/design/primitives";
+import { bg, fg } from "@/design/tokens/color.stylex";
+import { weight } from "@/design/tokens/typography.stylex";
 
 const COLUMNS = ["name", "email", "role", "team", "status", "lastLogin"] as const;
 
 const styles = stylex.create({
   alignEnd: { textAlign: "end" },
   row: {
-    backgroundColor: { default: "transparent", ":hover": color.canvas },
-  },
-  nameCell: {
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
+    backgroundColor: { default: "transparent", ":hover": bg.canvas },
   },
   name: {
-    fontWeight: 600,
+    fontWeight: weight.semibold,
     whiteSpace: "nowrap",
-    color: color.ink,
+    color: fg.default,
   },
   nowrap: { whiteSpace: "nowrap" },
-  actions: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 8,
-  },
 });
 
 interface UsersTableProps {
@@ -59,14 +50,14 @@ export function UsersTable({ users, onEdit, onDelete }: UsersTableProps) {
   return (
     <TableScroll>
       <Table data-testid="users-table">
-        <caption {...stylex.props(common.srOnly)}>{t("users.caption")}</caption>
+        <VisuallyHidden as="caption">{t("users.caption")}</VisuallyHidden>
         <TableHead>
           <tr>
             {COLUMNS.map((key) => (
               <TableHeaderCell key={key}>{t(`users.columns.${key}`)}</TableHeaderCell>
             ))}
             <TableHeaderCell sx={styles.alignEnd}>
-              <span {...stylex.props(common.srOnly)}>{t("users.columns.actions")}</span>
+              <VisuallyHidden>{t("users.columns.actions")}</VisuallyHidden>
             </TableHeaderCell>
           </tr>
         </TableHead>
@@ -74,10 +65,12 @@ export function UsersTable({ users, onEdit, onDelete }: UsersTableProps) {
           {users.map((user) => (
             <TableRow key={user.id} data-testid="user-row" data-user-id={user.id} sx={styles.row}>
               <TableCell>
-                <span {...stylex.props(styles.nameCell)}>
+                <Inline as="span" gap={12}>
                   <Avatar name={user.name} />
-                  <span {...stylex.props(styles.name)}>{user.name}</span>
-                </span>
+                  <Text as="span" sx={styles.name}>
+                    {user.name}
+                  </Text>
+                </Inline>
               </TableCell>
               <TableCell sx={styles.nowrap}>{user.email}</TableCell>
               <TableCell>{t(`role.${user.role}`)}</TableCell>
@@ -87,7 +80,7 @@ export function UsersTable({ users, onEdit, onDelete }: UsersTableProps) {
               </TableCell>
               <TableCell sx={styles.nowrap}>{formatDate(user.lastLoginAt)}</TableCell>
               <TableCell sx={styles.alignEnd}>
-                <span {...stylex.props(styles.actions)}>
+                <Inline as="span" gap={8} justify="end">
                   <Button
                     variant="outline"
                     size="sm"
@@ -106,7 +99,7 @@ export function UsersTable({ users, onEdit, onDelete }: UsersTableProps) {
                   >
                     {t("users.delete")}
                   </Button>
-                </span>
+                </Inline>
               </TableCell>
             </TableRow>
           ))}

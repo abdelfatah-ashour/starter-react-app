@@ -15,6 +15,10 @@ export default defineConfig({
       // The `reset` layer is declared ahead of StyleX's own layers so the
       // element reset in global.css loses to every component style.
       useCSSLayers: { before: ["reset"] },
+      // Sorts media queries by width so a wider breakpoint always wins over a
+      // narrower one. Without it the order is emission order, and a `lg`
+      // override can silently lose to the `sm` rule it is meant to replace.
+      enableMediaQueryOrder: true,
       unstable_moduleResolution: { type: "commonJS", rootDir },
       aliases: { "@/*": [path.join(srcDir, "*")] },
     }),

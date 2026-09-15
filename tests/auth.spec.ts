@@ -23,6 +23,17 @@ test.describe("Sign in", () => {
     expect(errors, `console errors:\n${errors.join("\n")}`).toEqual([]);
   });
 
+  test("trims surrounding whitespace on username and password", async ({ page }) => {
+    await page.goto("/");
+    const form = page.getByTestId("login-form");
+    await form.locator('[name="username"]').fill("  root  ");
+    await form.locator('[name="password"]').fill("  root  ");
+    await page.getByTestId("login-submit").click();
+
+    await expect(page.getByTestId("accounts-table")).toBeVisible();
+    await expect(page.getByTestId("login-page")).toBeHidden();
+  });
+
   test("accepts the configured credentials and survives a reload", async ({ page }) => {
     await page.goto("/");
     const form = page.getByTestId("login-form");

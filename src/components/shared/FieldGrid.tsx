@@ -1,23 +1,13 @@
 import type { ReactNode } from "react";
 import * as stylex from "@stylexjs/stylex";
-import { color } from "@/styles/tokens.stylex";
+import { Box, Grid, Text } from "@/design/primitives";
+import { space } from "@/design/tokens/space.stylex";
+import { track } from "@/design/tokens/grid.stylex";
 
 const styles = stylex.create({
   field: { minWidth: 0 },
-  term: { fontSize: 13, color: color.inkMuted },
-  value: {
-    marginTop: 4,
-    fontSize: 15,
-    fontWeight: 600,
-    overflowWrap: "break-word",
-    color: color.ink,
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    columnGap: 24,
-    rowGap: 20,
-  },
+  value: { marginTop: space[4] },
+  grid: { gridTemplateColumns: track[2], columnGap: space[24], rowGap: space[20] },
 });
 
 /** Label-over-value pair used throughout the account dialog. */
@@ -31,13 +21,21 @@ export function Field({
   sx?: stylex.StyleXStyles;
 }) {
   return (
-    <div {...stylex.props(styles.field, sx)}>
-      <dt {...stylex.props(styles.term)}>{label}</dt>
-      <dd {...stylex.props(styles.value)}>{children}</dd>
-    </div>
+    <Box sx={[styles.field, sx]}>
+      <Text as="dt" variant="bodySm" tone="subtle">
+        {label}
+      </Text>
+      <Text as="dd" variant="bodyLg" weight="semibold" tone="default" breakWords sx={styles.value}>
+        {children}
+      </Text>
+    </Box>
   );
 }
 
 export function FieldGrid({ children, sx }: { children: ReactNode; sx?: stylex.StyleXStyles }) {
-  return <dl {...stylex.props(styles.grid, sx)}>{children}</dl>;
+  return (
+    <Grid as="dl" sx={[styles.grid, sx]}>
+      {children}
+    </Grid>
+  );
 }

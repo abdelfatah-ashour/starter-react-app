@@ -1,11 +1,11 @@
 @import "./theme.css";
 
 /*
- * The only hand-written CSS in the app besides the tokens. Everything else is
- * StyleX. What lives here is what StyleX deliberately does not cover: document
- * level element styling, and the dialog enter/exit animations, which key off
- * Radix's `data-state` attribute — StyleX styles support pseudo-classes and
- * media queries, but not arbitrary attribute selectors.
+ * The only hand-written CSS in the app besides the token values. Everything
+ * else is StyleX. What lives here is what StyleX deliberately does not cover:
+ * document-level element styling, and the dialog enter/exit animations, which
+ * key off Radix's `data-state` attribute — StyleX styles support pseudo-classes
+ * and media queries, but not arbitrary attribute selectors.
  *
  * The element reset sits in its own cascade layer, declared ahead of StyleX's
  * layers by `useCSSLayers: { before: ["reset"] }` in vite.config.ts. Without
@@ -30,9 +30,9 @@
   }
 
   body {
-    background: var(--color-canvas);
-    color: var(--color-ink);
-    font-family: var(--font-sans);
+    background: var(--pb-bg-canvas);
+    color: var(--pb-fg-default);
+    font-family: var(--pb-font-sans);
     font-size: 14px;
   }
 
@@ -91,7 +91,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brand-600);
+    outline: 2px solid var(--pb-fg-accent);
     outline-offset: 2px;
   }
 }

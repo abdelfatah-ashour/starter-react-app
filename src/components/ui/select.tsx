@@ -1,43 +1,45 @@
 import * as React from "react";
 import * as stylex from "@stylexjs/stylex";
 import { ChevronDown } from "lucide-react";
-import { color } from "@/styles/tokens.stylex";
-import { leading } from "@/styles/type.stylex";
+import { bg, fg, stroke } from "@/design/tokens/color.stylex";
+import { border, radius } from "@/design/tokens/shape.stylex";
+import { control, icon } from "@/design/tokens/size.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { text } from "@/design/text";
 
 const styles = stylex.create({
   wrapper: {
     position: "relative",
   },
   select: {
-    height: 40,
+    height: control.md,
     width: "100%",
     appearance: "none",
-    borderRadius: 8,
-    borderWidth: 1,
+    borderRadius: radius.lg,
+    borderWidth: border.thin,
     borderStyle: "solid",
-    borderColor: { default: color.hairline, ":focus-visible": color.brand500 },
-    backgroundColor: color.surface,
-    paddingInlineStart: 12,
-    paddingInlineEnd: 36,
-    fontSize: 14,
-    lineHeight: leading.sm,
-    color: color.ink,
+    borderColor: { default: stroke.default, ":focus-visible": stroke.accent },
+    backgroundColor: bg.surface,
+    paddingInlineStart: space[12],
+    paddingInlineEnd: space[36],
+    color: fg.default,
     outline: { default: null, ":focus": "none" },
-    boxShadow: { default: null, ":focus-visible": `0 0 0 2px ${color.brand200}` },
+    boxShadow: { default: null, ":focus-visible": `0 0 0 2px ${stroke.ring}` },
   },
   chevron: {
     pointerEvents: "none",
     position: "absolute",
     top: "50%",
-    insetInlineEnd: 12,
-    width: 16,
-    height: 16,
+    insetInlineEnd: space[12],
+    width: icon.sm,
+    height: icon.sm,
     transform: "translateY(-50%)",
-    color: color.inkMuted,
+    color: fg.subtle,
   },
 });
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  /** Applied to the wrapper, which is the control's outer box. */
   sx?: stylex.StyleXStyles;
 }
 
@@ -48,7 +50,7 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ children, sx, ...props }, ref) => (
     <div {...stylex.props(styles.wrapper, sx)}>
-      <select ref={ref} {...props} {...stylex.props(styles.select)}>
+      <select ref={ref} {...props} {...stylex.props(text.body, styles.select)}>
         {children}
       </select>
       <ChevronDown aria-hidden="true" {...stylex.props(styles.chevron)} />

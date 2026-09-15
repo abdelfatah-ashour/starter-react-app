@@ -3,18 +3,16 @@ import { Trans, useTranslation } from "react-i18next";
 import { Dialog, DialogTitle, ModalContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { User } from "@/types";
-import { color } from "@/styles/tokens.stylex";
+import { Inline, Text } from "@/design/primitives";
+import { fg } from "@/design/tokens/color.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { text } from "@/design/text";
+import { weight } from "@/design/tokens/typography.stylex";
 
 const styles = stylex.create({
-  title: { fontSize: 17, fontWeight: 700, color: color.ink },
-  body: { marginTop: 8, fontSize: 14, lineHeight: "24px", color: color.inkSoft },
-  name: { fontWeight: 600, color: color.ink },
-  actions: {
-    marginTop: 24,
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 10,
-  },
+  body: { marginTop: space[8] },
+  name: { fontWeight: weight.semibold, color: fg.default },
+  actions: { marginTop: space[24] },
 });
 
 interface ConfirmDeleteDialogProps {
@@ -30,22 +28,22 @@ export function ConfirmDeleteDialog({ user, onConfirm, onCancel }: ConfirmDelete
     <Dialog open={user !== null} onOpenChange={(open) => !open && onCancel()}>
       {user ? (
         <ModalContent data-testid="confirm-delete">
-          <DialogTitle {...stylex.props(styles.title)}>{t("users.confirm.title")}</DialogTitle>
-          <p {...stylex.props(styles.body)}>
+          <DialogTitle {...stylex.props(text.titleXs)}>{t("users.confirm.title")}</DialogTitle>
+          <Text leading="loose" tone="muted" sx={styles.body}>
             <Trans
               i18nKey="users.confirm.body"
               values={{ name: user.name }}
               components={[<span {...stylex.props(styles.name)} />]}
             />
-          </p>
-          <div {...stylex.props(styles.actions)}>
+          </Text>
+          <Inline gap={10} justify="end" sx={styles.actions}>
             <Button variant="outline" data-testid="confirm-no" onClick={onCancel}>
               {t("common.cancel")}
             </Button>
             <Button variant="dangerSolid" data-testid="confirm-yes" onClick={onConfirm}>
               {t("users.confirm.confirm")}
             </Button>
-          </div>
+          </Inline>
         </ModalContent>
       ) : null}
     </Dialog>

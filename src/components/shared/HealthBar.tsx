@@ -1,43 +1,43 @@
 import * as stylex from "@stylexjs/stylex";
 import { useTranslation } from "react-i18next";
-import { color } from "@/styles/tokens.stylex";
-import { bp } from "@/styles/breakpoints.stylex";
-import { common } from "@/styles/common";
+import { Inline } from "@/design/primitives";
+import { bg, fg, meter } from "@/design/tokens/color.stylex";
+import { radius } from "@/design/tokens/shape.stylex";
+import { space } from "@/design/tokens/space.stylex";
 
 const styles = stylex.create({
-  wrapper: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-  },
   track: {
+    /* Thinner than any spacing step; a bar this size is its own measure. */
     height: 5,
-    width: { default: 56, [bp.xl]: 72 },
+    width: { default: space[56], ["@media (min-width: 1280px)"]: space[72] },
     flexShrink: 0,
     overflow: "hidden",
-    borderRadius: 9999,
-    backgroundColor: color.neutralSoft,
+    borderRadius: radius.full,
+    backgroundColor: bg.subtle,
   },
   fill: {
     display: "block",
     height: "100%",
-    borderRadius: 9999,
+    borderRadius: radius.full,
   },
-  score: { color: color.inkSoft },
+  /* Inherits its size, so the score reads at 14px in a table row and at 15px
+     in the account dialog, matching the text it sits beside. */
+  score: { color: fg.muted, fontVariantNumeric: "tabular-nums" },
 });
 
-const tones = stylex.create({
-  good: { backgroundColor: color.good },
-  warn: { backgroundColor: color.warnBar },
-  bad: { backgroundColor: color.bad },
+/** Thresholds are the product's, not the design system's. */
+const fills = stylex.create({
+  good: { backgroundColor: meter.good },
+  fair: { backgroundColor: meter.fair },
+  poor: { backgroundColor: meter.poor },
 });
 
-/** The fill width is per-instance data, so it stays an inline style. */
+/** The width is per-row data, so it stays an inline style. */
 const width = stylex.create({
   percent: (value: number) => ({ width: `${value}%` }),
 });
 
-const toneFor = (score: number) => (score >= 70 ? tones.good : score >= 55 ? tones.warn : tones.bad);
+const fillFor = (score: number) => (score >= 70 ? fills.good : score >= 55 ? fills.fair : fills.poor);
 
 /** 0–100 health score as a track plus the number, used in the table and account dialog. */
 export function HealthBar({ score, sx }: { score: number; sx?: stylex.StyleXStyles }) {
@@ -45,15 +45,15 @@ export function HealthBar({ score, sx }: { score: number; sx?: stylex.StyleXStyl
   const clamped = Math.max(0, Math.min(100, score));
 
   return (
-    <span {...stylex.props(styles.wrapper, sx)}>
+    <Inline as="span" gap={10} sx={sx}>
       <span
         role="img"
         aria-label={t("accounts.healthLabel", { score })}
         {...stylex.props(styles.track)}
       >
-        <span {...stylex.props(styles.fill, toneFor(score), width.percent(clamped))} />
+        <span {...stylex.props(styles.fill, fillFor(score), width.percent(clamped))} />
       </span>
-      <span {...stylex.props(common.tabularNums, styles.score)}>{score}</span>
-    </span>
+      <span {...stylex.props(styles.score)}>{score}</span>
+    </Inline>
   );
 }

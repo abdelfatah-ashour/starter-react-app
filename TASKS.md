@@ -1,7 +1,7 @@
 # PulseBoard — build checklist
 
 Stack: React 19 + TypeScript + Vite · StyleX · Recharts · Zod · Playwright
-(Sections 0–13 record the original Tailwind/shadcn build; section 14 replaced that styling layer.)
+(Sections 0–13 record the original Tailwind/shadcn build; 14 replaced that styling layer, 15 built a design system on it.)
 
 ## 0. Tooling & stack setup
 - [x] Install Tailwind CSS v4 + `@tailwindcss/vite`, wire into `vite.config.ts`
@@ -136,3 +136,16 @@ Stack: React 19 + TypeScript + Vite · StyleX · Recharts · Zod · Playwright
 - [x] Kept `@radix-ui/react-dialog` — modal focus trap / Escape / `role="dialog"` are behaviour, not styling
 - [x] Dialog enter/exit animations stay in `global.css`: they key off Radix `data-state`, which StyleX cannot target
 - [x] Verified: 35/35 Playwright tests pass, 16/16 screenshots pixel-identical to the Tailwind build (bar a select-chevron centring fix)
+
+## 15. Design system on StyleX
+- [x] `src/design/` — tokens, type scale, surfaces, recipes, primitives, README
+- [x] Semantic colour roles (`bg` / `fg` / `stroke` / `chart` / `meter`) over per-theme values in `theme.css`
+- [x] Scales: space (px-keyed), radius, border, icon, control, font size, weight, tracking, leading, motion, z-index, grid track
+- [x] `text.ts` — the type scale as whole styles, with `weights` / `leadings` / `tones` overrides
+- [x] `recipe()` — typed variant composition, replacing hand-indexed style maps
+- [x] Primitives: `Box`, `Stack`, `Inline`, `Grid`, `Text`, `VisuallyHidden`
+- [x] Every component rebuilt on the system; no raw colour, size or weight literals left
+- [x] Found and fixed: responsive `sx` overrides were dropping their base value (StyleX merges per property)
+- [x] Found and fixed: breakpoints via `defineConsts` silently disabled StyleX's overlapping-media-query rewrite
+- [x] Verified: 36/36 Playwright tests pass; computed styles identical at 1280 / 768 / 375; 15/16 screenshots pixel-identical
+- [ ] NOTE: the delete-dialog title now takes the type scale's `-0.01em` tracking — the one intentional visual change

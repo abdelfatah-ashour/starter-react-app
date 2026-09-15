@@ -1,30 +1,31 @@
 import * as React from "react";
 import * as stylex from "@stylexjs/stylex";
-import { color } from "@/styles/tokens.stylex";
-import { leading } from "@/styles/type.stylex";
+import { bg, fg, stroke } from "@/design/tokens/color.stylex";
+import { border, radius } from "@/design/tokens/shape.stylex";
+import { control } from "@/design/tokens/size.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { text } from "@/design/text";
 
 const styles = stylex.create({
   base: {
-    height: 40,
+    height: control.md,
     width: "100%",
-    borderRadius: 8,
-    borderWidth: 1,
+    borderRadius: radius.lg,
+    borderWidth: border.thin,
     borderStyle: "solid",
-    backgroundColor: color.surface,
-    paddingInline: 12,
-    fontSize: 14,
-    lineHeight: leading.sm,
-    color: color.ink,
+    backgroundColor: bg.surface,
+    paddingInline: space[12],
+    color: fg.default,
     outline: { default: null, ":focus": "none" },
-    "::placeholder": { color: color.inkMuted },
+    "::placeholder": { color: fg.subtle },
   },
   valid: {
-    borderColor: { default: color.hairline, ":focus-visible": color.brand500 },
-    boxShadow: { default: null, ":focus-visible": `0 0 0 2px ${color.brand200}` },
+    borderColor: { default: stroke.default, ":focus-visible": stroke.accent },
+    boxShadow: { default: null, ":focus-visible": `0 0 0 2px ${stroke.ring}` },
   },
   invalid: {
-    borderColor: color.bad,
-    boxShadow: { default: null, ":focus-visible": `0 0 0 2px ${color.badSoft}` },
+    borderColor: stroke.danger,
+    boxShadow: { default: null, ":focus-visible": `0 0 0 2px ${stroke.ringDanger}` },
   },
 });
 
@@ -39,7 +40,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       ref={ref}
       aria-invalid={invalid || undefined}
       {...props}
-      {...stylex.props(styles.base, invalid ? styles.invalid : styles.valid, sx)}
+      {...stylex.props(text.body, styles.base, invalid ? styles.invalid : styles.valid, sx)}
     />
   ),
 );

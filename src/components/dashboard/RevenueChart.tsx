@@ -19,39 +19,29 @@ import {
   formatMonthShort,
 } from "@/lib/format";
 import type { RevenuePoint } from "@/types";
-import { color, shadow } from "@/styles/tokens.stylex";
-import { common } from "@/styles/common";
+import { Box, Inline, Stack, Text } from "@/design/primitives";
+import { chart, fg } from "@/design/tokens/color.stylex";
+import { radius } from "@/design/tokens/shape.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { surface } from "@/design/surface";
+import { text } from "@/design/text";
 
 const AXIS_TICKS = [0, 25_000, 50_000, 75_000, 100_000];
 
 const styles = stylex.create({
+  /* The chart header stacks: the legend sits under the title, not beside it. */
   header: { display: "block" },
-  legend: {
-    marginTop: 12,
-    display: "flex",
-    alignItems: "center",
-    gap: 20,
-  },
-  swatchRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    fontSize: 13,
-    color: color.inkSoft,
-  },
-  swatchSquare: { width: 12, height: 12, borderRadius: 3 },
-  swatchDot: { width: 12, height: 12, borderRadius: 9999 },
-  content: { paddingTop: 16 },
+  legend: { marginTop: space[12] },
+  swatchLabel: { color: fg.muted },
+  swatchSquare: { width: space[12], height: space[12], borderRadius: radius.xs },
+  swatchDot: { width: space[12], height: space[12], borderRadius: radius.full },
+  content: { paddingTop: space[16] },
+  /* Tall enough for twelve columns to stay legible, short enough to stay above the fold. */
   plot: { height: 280, width: "100%" },
   tooltip: {
-    paddingInline: 12,
-    paddingBlock: 8,
-    fontSize: 13,
-    boxShadow: shadow.popover,
+    paddingInline: space[12],
+    paddingBlock: space[8],
   },
-  tooltipMonth: { fontWeight: 600, color: color.ink },
-  tooltipFirstRow: { marginTop: 4, color: color.inkSoft },
-  tooltipRow: { color: color.inkSoft },
 });
 
 /** Swatch fills come from the chart palette, so they stay inline styles. */
@@ -75,15 +65,19 @@ function ChartTooltip({
   const target = payload.find((entry) => entry.dataKey === "target")?.value;
 
   return (
-    <div {...stylex.props(common.card, styles.tooltip)}>
-      <p {...stylex.props(styles.tooltipMonth)}>{formatMonthLong(String(label))}</p>
-      <p {...stylex.props(styles.tooltipFirstRow)}>
-        {labels.revenue} {formatCurrency(revenue ?? 0)}
-      </p>
-      <p {...stylex.props(styles.tooltipRow)}>
-        {labels.target} {formatCurrency(target ?? 0)}
-      </p>
-    </div>
+    <Stack gap={4} sx={[surface.popover, styles.tooltip]}>
+      <Text variant="bodySm" weight="semibold" tone="default">
+        {formatMonthLong(String(label))}
+      </Text>
+      <Stack>
+        <Text variant="bodySm" tone="muted">
+          {labels.revenue} {formatCurrency(revenue ?? 0)}
+        </Text>
+        <Text variant="bodySm" tone="muted">
+          {labels.target} {formatCurrency(target ?? 0)}
+        </Text>
+      </Stack>
+    </Stack>
   );
 }
 
@@ -97,7 +91,7 @@ function LegendSwatch({
   label: string;
 }) {
   return (
-    <span {...stylex.props(styles.swatchRow)}>
+    <Inline as="span" gap={8} sx={[text.bodySm, styles.swatchLabel]}>
       <span
         aria-hidden="true"
         {...stylex.props(
@@ -106,7 +100,7 @@ function LegendSwatch({
         )}
       />
       {label}
-    </span>
+    </Inline>
   );
 }
 
@@ -127,18 +121,18 @@ export function RevenueChart({ series }: { series: RevenuePoint[] }) {
       <CardHeader sx={styles.header}>
         <CardTitle>{t("chart.title")}</CardTitle>
         <CardDescription>{t("chart.subtitle")}</CardDescription>
-        <div {...stylex.props(styles.legend)}>
-          <LegendSwatch shape="square" fill={color.barAccent} label={t("chart.revenue")} />
-          <LegendSwatch shape="dot" fill={color.target} label={t("chart.target")} />
-        </div>
+        <Inline gap={20} sx={styles.legend}>
+          <LegendSwatch shape="square" fill={chart.barActive} label={t("chart.revenue")} />
+          <LegendSwatch shape="dot" fill={chart.target} label={t("chart.target")} />
+        </Inline>
       </CardHeader>
       <CardContent sx={styles.content}>
-        <div
+        <Box
           data-testid="revenue-chart"
           role="img"
           dir="ltr"
           aria-label={summary}
-          {...stylex.props(styles.plot)}
+          sx={styles.plot}
         >
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
@@ -146,14 +140,14 @@ export function RevenueChart({ series }: { series: RevenuePoint[] }) {
               barCategoryGap="28%"
               margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
             >
-              <CartesianGrid stroke={color.hairline} vertical={false} />
+              <CartesianGrid stroke={chart.grid} vertical={false} />
               <XAxis
                 dataKey="month"
                 tickFormatter={formatMonthShort}
                 tickLine={false}
                 axisLine={false}
                 tickMargin={12}
-                tick={{ fill: color.inkMuted, fontSize: 13 }}
+                tick={{ fill: chart.axis, fontSize: 13 }}
               />
               <YAxis
                 domain={[0, 100_000]}
@@ -162,13 +156,15 @@ export function RevenueChart({ series }: { series: RevenuePoint[] }) {
                 tickLine={false}
                 axisLine={false}
                 width={56}
-                tick={{ fill: color.inkMuted, fontSize: 13 }}
+                tick={{ fill: chart.axis, fontSize: 13 }}
               />
               <Tooltip
                 content={
-                  <ChartTooltip labels={{ revenue: t("chart.revenue"), target: t("chart.target") }} />
+                  <ChartTooltip
+                    labels={{ revenue: t("chart.revenue"), target: t("chart.target") }}
+                  />
                 }
-                cursor={{ fill: color.brand50, radius: 4 }}
+                cursor={{ fill: chart.cursor, radius: 4 }}
               />
               <Bar
                 dataKey="revenue"
@@ -180,11 +176,7 @@ export function RevenueChart({ series }: { series: RevenuePoint[] }) {
                 {series.map((point, index) => (
                   <Cell
                     key={point.month}
-                    fill={
-                      index === series.length - 1
-                        ? color.barAccent
-                        : color.bar
-                    }
+                    fill={index === series.length - 1 ? chart.barActive : chart.bar}
                   />
                 ))}
               </Bar>
@@ -192,20 +184,15 @@ export function RevenueChart({ series }: { series: RevenuePoint[] }) {
                 dataKey="target"
                 name="Target"
                 type="linear"
-                stroke={color.target}
+                stroke={chart.target}
                 strokeWidth={2}
                 isAnimationActive={false}
-                dot={{
-                  r: 4,
-                  fill: color.surface,
-                  stroke: color.target,
-                  strokeWidth: 2,
-                }}
+                dot={{ r: 4, fill: chart.dot, stroke: chart.target, strokeWidth: 2 }}
                 activeDot={{ r: 5 }}
               />
             </ComposedChart>
           </ResponsiveContainer>
-        </div>
+        </Box>
       </CardContent>
     </Card>
   );

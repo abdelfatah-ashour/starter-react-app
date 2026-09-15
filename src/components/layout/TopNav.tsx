@@ -1,12 +1,17 @@
 import * as stylex from "@stylexjs/stylex";
 import { useTranslation } from "react-i18next";
 import { LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonIcon } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
-import { color } from "@/styles/tokens.stylex";
-import { bp } from "@/styles/breakpoints.stylex";
-import { leading } from "@/styles/type.stylex";
+import { Inline, Text } from "@/design/primitives";
+import { bg, fg, stroke } from "@/design/tokens/color.stylex";
+import { duration } from "@/design/tokens/motion.stylex";
+import { border, radius } from "@/design/tokens/shape.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { layer } from "@/design/tokens/layer.stylex";
+import { text, weights } from "@/design/text";
+import { responsive } from "@/design/responsive";
 
 export type PageKey = "dashboard" | "users";
 
@@ -16,74 +21,47 @@ const styles = stylex.create({
   header: {
     position: "sticky",
     top: 0,
-    zIndex: 30,
-    borderWidth: 0,
-    borderBottomWidth: 1,
+    zIndex: layer.sticky,
+    borderWidth: border.none,
+    borderBottomWidth: border.thin,
     borderStyle: "solid",
-    borderColor: color.hairline,
-    backgroundColor: color.surface,
+    borderColor: stroke.default,
+    backgroundColor: bg.surface,
   },
   bar: {
-    display: "flex",
-    height: 56,
-    alignItems: "center",
-    gap: { default: 12, [bp.sm]: 24 },
-    paddingInline: { default: 8, [bp.sm]: 16, [bp.lg]: 32 },
-  },
-  brand: {
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
+    height: space[56],
+    gap: { default: space[12], ["@media (min-width: 640px)"]: space[24] },
+    paddingInline: { default: space[8], ["@media (min-width: 640px)"]: space[16], ["@media (min-width: 1024px)"]: space[32] },
   },
   mark: {
-    width: 28,
-    height: 28,
+    width: space[28],
+    height: space[28],
     flexShrink: 0,
-    borderRadius: 9,
-    backgroundColor: color.brand500,
-  },
-  wordmark: {
-    fontSize: 17,
-    fontWeight: 700,
-    letterSpacing: "-0.01em",
-    color: color.ink,
-  },
-  nav: {
-    display: "flex",
-    alignItems: "center",
-    gap: 4,
+    borderRadius: radius.xl,
+    backgroundColor: bg.accentMark,
   },
   link: {
-    borderRadius: 8,
-    paddingInline: 12,
-    paddingBlock: 6,
-    fontSize: 14,
-    lineHeight: leading.sm,
-    fontWeight: 500,
+    borderRadius: radius.lg,
+    paddingInline: space[12],
+    paddingBlock: space[6],
     transitionProperty: "background-color, color",
-    transitionDuration: "150ms",
+    transitionDuration: duration.base,
   },
   linkActive: {
-    backgroundColor: color.brand50,
-    color: color.brand600,
+    backgroundColor: bg.accentSubtle,
+    color: fg.accent,
   },
   linkIdle: {
-    backgroundColor: { default: "transparent", ":hover": color.canvas },
-    color: { default: color.inkMuted, ":hover": color.ink },
+    backgroundColor: { default: "transparent", ":hover": bg.canvas },
+    color: { default: fg.subtle, ":hover": fg.default },
   },
   actions: {
     marginInlineStart: "auto",
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
   },
+  /* The period is context, not navigation: it goes when the bar gets tight. */
   period: {
-    display: { default: "none", [bp.lg]: "block" },
-    fontSize: 14,
-    lineHeight: leading.sm,
-    color: color.inkMuted,
+    display: { default: "none", ["@media (min-width: 1024px)"]: "block" },
   },
-  icon: { width: 18, height: 18 },
 });
 
 interface TopNavProps {
@@ -98,13 +76,15 @@ export function TopNav({ current, onNavigate, period, onSignOut }: TopNavProps) 
 
   return (
     <header {...stylex.props(styles.header)}>
-      <div {...stylex.props(styles.bar)}>
-        <div {...stylex.props(styles.brand)}>
+      <Inline sx={[responsive.gutter, styles.bar]}>
+        <Inline gap={12}>
           <span aria-hidden="true" {...stylex.props(styles.mark)} />
-          <h1 {...stylex.props(styles.wordmark)}>{t("app.name")}</h1>
-        </div>
+          <Text as="h1" variant="titleXs" tone="default">
+            {t("app.name")}
+          </Text>
+        </Inline>
 
-        <nav aria-label={t("nav.primary")} {...stylex.props(styles.nav)}>
+        <Inline as="nav" aria-label={t("nav.primary")} gap={4}>
           {LINKS.map((key) => {
             const active = current === key;
             return (
@@ -114,30 +94,39 @@ export function TopNav({ current, onNavigate, period, onSignOut }: TopNavProps) 
                 data-testid={`nav-${key}`}
                 aria-current={active ? "page" : undefined}
                 onClick={() => onNavigate(key)}
-                {...stylex.props(styles.link, active ? styles.linkActive : styles.linkIdle)}
+                {...stylex.props(
+                  text.body,
+                  weights.medium,
+                  styles.link,
+                  active ? styles.linkActive : styles.linkIdle,
+                )}
               >
                 {t(`nav.${key}`)}
               </button>
             );
           })}
-        </nav>
+        </Inline>
 
-        <div {...stylex.props(styles.actions)}>
-          {period ? <p {...stylex.props(styles.period)}>{period}</p> : null}
+        <Inline gap={8} sx={styles.actions}>
+          {period ? (
+            <Text tone="subtle" sx={styles.period}>
+              {period}
+            </Text>
+          ) : null}
           <LanguageToggle />
           <ThemeToggle />
           <Button
             variant="ghost"
-            size="icon"
+            size="square"
             data-testid="sign-out"
             onClick={onSignOut}
             aria-label={t("nav.signOut")}
             title={t("nav.signOut")}
           >
-            <LogOut aria-hidden="true" {...stylex.props(styles.icon)} />
+            <LogOut aria-hidden="true" {...stylex.props(buttonIcon.md)} />
           </Button>
-        </div>
-      </div>
+        </Inline>
+      </Inline>
     </header>
   );
 }

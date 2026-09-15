@@ -14,8 +14,9 @@ import {
   type UserFormValues,
 } from "@/lib/schemas";
 import type { User, UserRole } from "@/types";
-import { color } from "@/styles/tokens.stylex";
-import { leading } from "@/styles/type.stylex";
+import { Box, Inline, Stack, Text } from "@/design/primitives";
+import { space } from "@/design/tokens/space.stylex";
+import { text } from "@/design/text";
 
 const ROLES: UserRole[] = ["Admin", "Manager", "Viewer"];
 
@@ -25,31 +26,16 @@ const toValues = (user: User | null): UserFormValues =>
   user ? { name: user.name, email: user.email, role: user.role, team: user.team } : emptyValues;
 
 const styles = stylex.create({
-  content: { maxWidth: 460, padding: 28 },
-  eyebrow: { fontSize: 14, lineHeight: leading.sm, color: color.inkMuted },
+  content: { maxWidth: 460, padding: space[28] },
   title: {
-    marginTop: 2,
-    marginBottom: 24,
-    paddingInlineEnd: 48,
-    fontSize: 24,
-    lineHeight: "32px",
-    fontWeight: 700,
-    letterSpacing: "-0.02em",
-    color: color.ink,
+    marginTop: space[2],
+    marginBottom: space[24],
+    /* Clears the close button in the corner. */
+    paddingInlineEnd: space[48],
   },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 20,
-  },
-  control: { marginTop: 6 },
-  error: { marginTop: 6, fontSize: 13, color: color.bad },
-  actions: {
-    display: "flex",
-    justifyContent: "flex-end",
-    gap: 10,
-    paddingTop: 4,
-  },
+  control: { marginTop: space[6] },
+  error: { marginTop: space[6] },
+  actions: { paddingTop: space[4] },
 });
 
 interface UserFormDialogProps {
@@ -94,7 +80,7 @@ function UserForm({
   const set = (field: UserFormField) => (value: string) =>
     setValues((current) => ({ ...current, [field]: value }) as UserFormValues);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLElement>) => {
     event.preventDefault();
     const result = userFormSchema.safeParse(values);
     if (!result.success) {
@@ -107,26 +93,28 @@ function UserForm({
 
   const fieldError = (field: UserFormField) =>
     errors[field] ? (
-      <p
+      <Text
         data-testid={primaryError === field ? "form-error" : undefined}
         role="alert"
-        {...stylex.props(styles.error)}
+        variant="bodySm"
+        tone="danger"
+        sx={styles.error}
       >
         {t(errors[field]!)}
-      </p>
+      </Text>
     ) : null;
 
   return (
     <>
-      <p {...stylex.props(styles.eyebrow)}>
+      <Text tone="subtle">
         {editing ? t("users.form.editEyebrow") : t("users.form.createEyebrow")}
-      </p>
-      <DialogTitle {...stylex.props(styles.title)}>
+      </Text>
+      <DialogTitle {...stylex.props(text.titleLg, styles.title)}>
         {editing ? editing.name : t("users.form.createTitle")}
       </DialogTitle>
 
-      <form data-testid="user-form" onSubmit={handleSubmit} noValidate {...stylex.props(styles.form)}>
-        <div>
+      <Stack as="form" data-testid="user-form" onSubmit={handleSubmit} noValidate gap={20}>
+        <Box>
           <Label htmlFor={`${ids}-name`}>{t("users.form.name")}</Label>
           <Input
             id={`${ids}-name`}
@@ -138,9 +126,9 @@ function UserForm({
             autoComplete="off"
           />
           {fieldError("name")}
-        </div>
+        </Box>
 
-        <div>
+        <Box>
           <Label htmlFor={`${ids}-email`}>{t("users.form.email")}</Label>
           <Input
             id={`${ids}-email`}
@@ -153,9 +141,9 @@ function UserForm({
             autoComplete="off"
           />
           {fieldError("email")}
-        </div>
+        </Box>
 
-        <div>
+        <Box>
           <Label htmlFor={`${ids}-role`}>{t("users.form.role")}</Label>
           <Select
             id={`${ids}-role`}
@@ -171,9 +159,9 @@ function UserForm({
             ))}
           </Select>
           {fieldError("role")}
-        </div>
+        </Box>
 
-        <div>
+        <Box>
           <Label htmlFor={`${ids}-team`}>{t("users.form.team")}</Label>
           <Input
             id={`${ids}-team`}
@@ -184,17 +172,17 @@ function UserForm({
             autoComplete="off"
           />
           {fieldError("team")}
-        </div>
+        </Box>
 
-        <div {...stylex.props(styles.actions)}>
+        <Inline gap={10} justify="end" sx={styles.actions}>
           <Button type="button" variant="outline" data-testid="user-cancel" onClick={onCancel}>
             {t("common.cancel")}
           </Button>
           <Button type="submit" data-testid="user-save">
             {editing ? t("users.form.save") : t("users.form.create")}
           </Button>
-        </div>
-      </form>
+        </Inline>
+      </Stack>
     </>
   );
 }

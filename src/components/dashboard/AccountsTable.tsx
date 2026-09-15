@@ -19,9 +19,12 @@ import { useSortable } from "@/hooks/useSortable";
 import { useTextFilter } from "@/hooks/useTextFilter";
 import { formatCurrency } from "@/lib/format";
 import type { Account } from "@/types";
-import { color } from "@/styles/tokens.stylex";
-import { bp } from "@/styles/breakpoints.stylex";
-import { common } from "@/styles/common";
+import { Box, VisuallyHidden } from "@/design/primitives";
+import { bg, fg } from "@/design/tokens/color.stylex";
+import { duration } from "@/design/tokens/motion.stylex";
+import { icon } from "@/design/tokens/size.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { weight } from "@/design/tokens/typography.stylex";
 
 type ColumnKey = "name" | "plan" | "region" | "owner" | "mrr" | "seats" | "status" | "health";
 
@@ -49,40 +52,40 @@ const ACCESSORS: Record<ColumnKey, (account: Account) => string | number> = {
 const styles = stylex.create({
   search: {
     position: "relative",
-    width: { default: "100%", [bp.lg]: 340 },
+    width: { default: "100%", ["@media (min-width: 1024px)"]: 340 },
   },
   searchIcon: {
     pointerEvents: "none",
     position: "absolute",
     top: "50%",
-    insetInlineStart: 12,
-    width: 16,
-    height: 16,
+    insetInlineStart: space[12],
+    width: icon.sm,
+    height: icon.sm,
     transform: "translateY(-50%)",
-    color: color.inkMuted,
+    color: fg.subtle,
   },
-  searchInput: { paddingInlineStart: 36 },
-  content: { paddingInline: 20, paddingTop: 16 },
+  searchInput: { paddingInlineStart: space[36] },
+  content: { paddingInline: space[20], paddingTop: space[16] },
   row: {
     cursor: "pointer",
     transitionProperty: "background-color",
-    transitionDuration: "150ms",
-    backgroundColor: { default: "transparent", ":hover": color.canvas },
+    transitionDuration: duration.base,
+    backgroundColor: { default: "transparent", ":hover": bg.canvas },
   },
   rowSelected: {
-    backgroundColor: { default: color.brand50, ":hover": color.brand50 },
+    backgroundColor: { default: bg.accentSubtle, ":hover": bg.accentSubtle },
   },
   nameCell: {
-    fontWeight: 600,
+    fontWeight: weight.semibold,
     whiteSpace: "nowrap",
-    color: color.ink,
+    color: fg.default,
   },
   nowrap: { whiteSpace: "nowrap" },
   numeric: {
     textAlign: "end",
     fontVariantNumeric: "tabular-nums",
   },
-  mrrCell: { color: color.ink },
+  mrrCell: { color: fg.default },
 });
 
 interface AccountsTableProps {
@@ -105,11 +108,11 @@ export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableP
   return (
     <Card>
       <CardHeader>
-        <div>
+        <Box>
           <CardTitle>{t("accounts.title")}</CardTitle>
           <CardDescription>{t("accounts.count", { count: accounts.length })}</CardDescription>
-        </div>
-        <div {...stylex.props(styles.search)}>
+        </Box>
+        <Box sx={styles.search}>
           <Search aria-hidden="true" {...stylex.props(styles.searchIcon)} />
           <Input
             data-testid="table-filter"
@@ -120,13 +123,13 @@ export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableP
             placeholder={t("accounts.filterPlaceholder")}
             sx={styles.searchInput}
           />
-        </div>
+        </Box>
       </CardHeader>
 
       <CardContent sx={styles.content}>
         <TableScroll>
           <Table data-testid="accounts-table">
-            <caption {...stylex.props(common.srOnly)}>{t("accounts.caption")}</caption>
+            <VisuallyHidden as="caption">{t("accounts.caption")}</VisuallyHidden>
             <TableHead>
               <tr>
                 {COLUMNS.map((column) => (

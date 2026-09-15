@@ -2,22 +2,28 @@ import * as stylex from "@stylexjs/stylex";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { TableHeaderCell } from "@/components/ui/table";
 import type { SortDirection } from "@/hooks/useSortable";
-import { color } from "@/styles/tokens.stylex";
+import { fg } from "@/design/tokens/color.stylex";
+import { duration } from "@/design/tokens/motion.stylex";
+import { radius } from "@/design/tokens/shape.stylex";
+import { icon } from "@/design/tokens/size.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { weight } from "@/design/tokens/typography.stylex";
 
 const styles = stylex.create({
   alignEnd: { textAlign: "end" },
   button: {
     display: "inline-flex",
     alignItems: "center",
-    gap: 4,
-    borderRadius: 4,
-    color: { default: "inherit", ":hover": color.ink },
+    gap: space[4],
+    borderRadius: radius.sm,
+    color: { default: "inherit", ":hover": fg.default },
     transitionProperty: "color",
-    transitionDuration: "150ms",
+    transitionDuration: duration.base,
   },
+  /* Puts the arrow on the leading side, so it stays beside a right-aligned column. */
   reversed: { flexDirection: "row-reverse" },
-  sorted: { fontWeight: 500, color: color.inkSoft },
-  icon: { width: 14, height: 14 },
+  sorted: { fontWeight: weight.medium, color: fg.muted },
+  icon: { width: icon.xs, height: icon.xs },
 });
 
 interface SortableHeaderProps {
@@ -48,11 +54,7 @@ export function SortableHeader({
         type="button"
         data-testid={`sort-${columnKey}`}
         onClick={onToggle}
-        {...stylex.props(
-          styles.button,
-          direction && styles.sorted,
-          end && styles.reversed,
-        )}
+        {...stylex.props(styles.button, direction && styles.sorted, end && styles.reversed)}
       >
         <span>{label}</span>
         {direction === "asc" ? (

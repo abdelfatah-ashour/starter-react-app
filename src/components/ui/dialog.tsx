@@ -3,9 +3,11 @@ import * as stylex from "@stylexjs/stylex";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { color } from "@/styles/tokens.stylex";
-import { common } from "@/styles/common";
+import { Button, buttonIcon } from "@/components/ui/button";
+import { bg, fg } from "@/design/tokens/color.stylex";
+import { layer } from "@/design/tokens/layer.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { surface } from "@/design/surface";
 
 export const Dialog = DialogPrimitive.Root;
 export const DialogTitle = DialogPrimitive.Title;
@@ -16,37 +18,34 @@ const styles = stylex.create({
   overlay: {
     position: "fixed",
     inset: 0,
-    zIndex: 40,
-    backgroundColor: color.scrim,
+    zIndex: layer.overlay,
+    backgroundColor: bg.scrim,
   },
   content: {
     position: "fixed",
     top: "50%",
     insetInlineStart: "50%",
-    zIndex: 50,
+    zIndex: layer.modal,
     display: "flex",
     flexDirection: "column",
+    /* Leaves a 24px margin at the top and bottom of the viewport. */
     maxHeight: "calc(100dvh - 48px)",
     width: "calc(100vw - 24px)",
     maxWidth: 420,
     transform: "translate(-50%, -50%)",
     overflowY: "auto",
-    padding: 24,
+    padding: space[24],
   },
   close: {
     position: "absolute",
-    top: 24,
-    insetInlineEnd: 24,
-    color: color.ink,
-  },
-  closeIcon: {
-    width: 16,
-    height: 16,
+    top: space[24],
+    insetInlineEnd: space[24],
+    color: fg.default,
   },
 });
 
 /**
- * The open/close transitions live in `global.css`: they key off Radix's
+ * The open/close transitions live in `design/global.css`: they key off Radix's
  * `data-state` attribute, and StyleX styles cannot target arbitrary attributes.
  */
 const Overlay = React.forwardRef<
@@ -86,18 +85,18 @@ export const ModalContent = React.forwardRef<
         aria-describedby={undefined}
         data-pb-anim="modal"
         {...props}
-        {...stylex.props(common.card, styles.content, sx)}
+        {...stylex.props(surface.card, styles.content, sx)}
       >
         {closeTestId ? (
           <DialogPrimitive.Close asChild>
             <Button
               variant="outline"
-              size="icon"
+              size="square"
               data-testid={closeTestId}
               sx={styles.close}
               aria-label={t("common.close")}
             >
-              <X aria-hidden="true" {...stylex.props(styles.closeIcon)} />
+              <X aria-hidden="true" {...stylex.props(buttonIcon.sm)} />
             </Button>
           </DialogPrimitive.Close>
         ) : null}

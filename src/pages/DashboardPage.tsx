@@ -1,20 +1,11 @@
 import { useState } from "react";
-import * as stylex from "@stylexjs/stylex";
 import { useTranslation } from "react-i18next";
 import { KpiRow } from "@/components/dashboard/KpiCard";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { AccountsTable } from "@/components/dashboard/AccountsTable";
 import { AccountDialog } from "@/components/dashboard/AccountDialog";
 import type { Account, Kpi, RevenuePoint } from "@/types";
-import { common } from "@/styles/common";
-
-const styles = stylex.create({
-  page: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 16,
-  },
-});
+import { Stack, VisuallyHidden } from "@/design/primitives";
 
 interface DashboardPageProps {
   kpis: Kpi[];
@@ -27,12 +18,12 @@ export function DashboardPage({ kpis, revenueSeries, accounts }: DashboardPagePr
   const [selected, setSelected] = useState<Account | null>(null);
 
   return (
-    <div data-testid="dashboard-page" {...stylex.props(styles.page)}>
-      <h2 {...stylex.props(common.srOnly)}>{t("nav.dashboard")}</h2>
+    <Stack data-testid="dashboard-page" gap={16}>
+      <VisuallyHidden as="h2">{t("nav.dashboard")}</VisuallyHidden>
       <KpiRow kpis={kpis} />
       <RevenueChart series={revenueSeries} />
       <AccountsTable accounts={accounts} selectedId={selected?.id ?? null} onSelect={setSelected} />
       <AccountDialog account={selected} onClose={() => setSelected(null)} />
-    </div>
+    </Stack>
   );
 }

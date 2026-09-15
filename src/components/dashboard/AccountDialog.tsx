@@ -6,53 +6,36 @@ import { HealthBar } from "@/components/shared/HealthBar";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { formatCurrency, formatDate, formatNumber } from "@/lib/format";
 import type { Account } from "@/types";
-import { color } from "@/styles/tokens.stylex";
-import { bp } from "@/styles/breakpoints.stylex";
-import { leading } from "@/styles/type.stylex";
+import { Box, Stack, Text } from "@/design/primitives";
+import { fg } from "@/design/tokens/color.stylex";
+import { space } from "@/design/tokens/space.stylex";
+import { track } from "@/design/tokens/grid.stylex";
+import { text, weights } from "@/design/text";
 
 const styles = stylex.create({
   content: {
     maxWidth: 560,
-    padding: 28,
-  },
-  eyebrow: {
-    fontSize: 14,
-    lineHeight: leading.sm,
-    color: color.inkMuted,
+    padding: space[28],
   },
   title: {
-    marginTop: 2,
-    marginBottom: 28,
-    paddingInlineEnd: 48,
-    fontSize: 24,
-    lineHeight: "32px",
-    fontWeight: 700,
-    letterSpacing: "-0.02em",
-    color: color.ink,
+    marginTop: space[2],
+    marginBottom: space[28],
+    /* Clears the close button in the corner. */
+    paddingInlineEnd: space[48],
   },
+  /* Restates the default: StyleX merges one property at a time, so an override
+     with no default would drop FieldGrid's own two-column value. */
   grid: {
-    gridTemplateColumns: {
-      default: "repeat(2, minmax(0, 1fr))",
-      [bp.sm]: "repeat(4, minmax(0, 1fr))",
-    },
+    gridTemplateColumns: { default: track[2], ["@media (min-width: 640px)"]: track[4] },
   },
-  list: {
-    marginTop: 24,
-    display: "flex",
-    flexDirection: "column",
-    gap: 20,
-  },
-  term: { fontSize: 13, color: color.inkMuted },
-  value: { marginTop: 4, fontSize: 15, fontWeight: 600, color: color.ink },
-  emailRow: { marginTop: 2 },
+  list: { marginTop: space[24] },
+  value: { marginTop: space[4] },
+  emailRow: { marginTop: space[2] },
   email: {
-    fontSize: 15,
-    fontWeight: 500,
     textDecorationLine: "underline",
     textUnderlineOffset: 2,
-    color: { default: color.brand600, ":hover": color.brand700 },
+    color: { default: fg.accent, ":hover": fg.accentStrong },
   },
-  notes: { marginTop: 4, fontSize: 15, lineHeight: "24px", color: color.ink },
 });
 
 interface AccountDialogProps {
@@ -70,8 +53,8 @@ export function AccountDialog({ account, onClose }: AccountDialogProps) {
     <Dialog open={account !== null} onOpenChange={(open) => !open && onClose()}>
       {account ? (
         <ModalContent data-testid="detail-drawer" closeTestId="drawer-close" sx={styles.content}>
-          <p {...stylex.props(styles.eyebrow)}>{t("accounts.detail.eyebrow")}</p>
-          <DialogTitle {...stylex.props(styles.title)}>{account.name}</DialogTitle>
+          <Text tone="subtle">{t("accounts.detail.eyebrow")}</Text>
+          <DialogTitle {...stylex.props(text.titleLg, styles.title)}>{account.name}</DialogTitle>
 
           <FieldGrid sx={styles.grid}>
             <Field label={t("accounts.columns.plan")}>{account.plan}</Field>
@@ -88,21 +71,32 @@ export function AccountDialog({ account, onClose }: AccountDialogProps) {
             <Field label={t("accounts.detail.lastActive")}>{formatDate(account.lastActiveAt)}</Field>
           </FieldGrid>
 
-          <dl {...stylex.props(styles.list)}>
-            <div>
-              <dt {...stylex.props(styles.term)}>{t("accounts.detail.owner")}</dt>
-              <dd {...stylex.props(styles.value)}>{account.owner}</dd>
-              <dd {...stylex.props(styles.emailRow)}>
-                <a href={`mailto:${account.ownerEmail}`} {...stylex.props(styles.email)}>
+          <Stack as="dl" gap={20} sx={styles.list}>
+            <Box>
+              <Text as="dt" variant="bodySm" tone="subtle">
+                {t("accounts.detail.owner")}
+              </Text>
+              <Text as="dd" variant="bodyLg" weight="semibold" tone="default" sx={styles.value}>
+                {account.owner}
+              </Text>
+              <Box as="dd" sx={styles.emailRow}>
+                <a
+                  href={`mailto:${account.ownerEmail}`}
+                  {...stylex.props(text.bodyLg, weights.medium, styles.email)}
+                >
                   {account.ownerEmail}
                 </a>
-              </dd>
-            </div>
-            <div>
-              <dt {...stylex.props(styles.term)}>{t("accounts.detail.notes")}</dt>
-              <dd {...stylex.props(styles.notes)}>{account.notes}</dd>
-            </div>
-          </dl>
+              </Box>
+            </Box>
+            <Box>
+              <Text as="dt" variant="bodySm" tone="subtle">
+                {t("accounts.detail.notes")}
+              </Text>
+              <Text as="dd" variant="bodyLg" leading="relaxed" tone="default" sx={styles.value}>
+                {account.notes}
+              </Text>
+            </Box>
+          </Stack>
         </ModalContent>
       ) : null}
     </Dialog>

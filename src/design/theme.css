@@ -1,0 +1,128 @@
+/*
+ * Where the design tokens get their values.
+ *
+ * These are plain custom properties rather than StyleX variables for one
+ * reason: the theme is an attribute on <html>, set before first paint by the
+ * inline script in index.html so there is no flash of the wrong theme, and
+ * StyleX cannot emit variable overrides behind an arbitrary selector such as
+ * `[data-theme="dark"]`. `design/tokens/color.stylex.ts` and
+ * `elevation.stylex.ts` re-export every one of these as a typed StyleX
+ * variable, and that is what components import.
+ *
+ * There is no separate primitive palette underneath this. The dark theme is not
+ * a mechanical remap of the light one — several roles move to a different hue
+ * rather than a different step of the same ramp — so a palette tier would be
+ * one alias per token and would hide, not explain, the relationship. Roles that
+ * genuinely share a value say so with `var()`.
+ */
+
+:root {
+  color-scheme: light;
+
+  --pb-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Backgrounds */
+  --pb-bg-canvas: #f1f3f7;
+  --pb-bg-surface: #ffffff;
+  --pb-bg-subtle: #eceef2;
+  --pb-bg-accent-subtle: #eef0fe;
+  --pb-bg-accent-soft: #e2e5fc;
+  --pb-bg-accent-mark: #5b5ee8;
+  --pb-bg-accent-solid: #4f52e0;
+  --pb-bg-accent-solid-hover: #4245c9;
+  --pb-bg-success-soft: #dcf5e4;
+  --pb-bg-warning-soft: #fdf0d5;
+  --pb-bg-danger-soft: #fde4e4;
+  --pb-bg-danger-solid: #dc2626;
+  --pb-bg-danger-solid-hover: #c11f1f;
+  --pb-bg-scrim: rgb(16 19 26 / 0.15);
+
+  /* Foregrounds */
+  --pb-fg-default: #10131a;
+  --pb-fg-muted: #475066;
+  --pb-fg-subtle: #6b7386;
+  --pb-fg-accent: #4f52e0;
+  --pb-fg-accent-strong: #4245c9;
+  --pb-fg-success: #15803d;
+  --pb-fg-warning: #b45309;
+  --pb-fg-danger: #dc2626;
+  /* Stays light in both themes: it sits on a solid accent or danger fill. */
+  --pb-fg-on-solid: #ffffff;
+
+  /* Borders and focus rings */
+  --pb-stroke-default: #e9ebf1;
+  --pb-stroke-accent: #5b5ee8;
+  --pb-stroke-ring: #c3c8f8;
+
+  /* Charts */
+  --pb-chart-bar: #b0b6ef;
+  --pb-chart-bar-active: #4f52e0;
+  --pb-chart-target: #c2710c;
+
+  /* Health meters */
+  --pb-meter-fair: #e5a50a;
+
+  /* Elevation */
+  --pb-shadow-card: 0 1px 2px rgb(16 19 26 / 0.04);
+  --pb-shadow-raised: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --pb-shadow-popover: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  /*
+   * Roles that are the same colour as another role in every theme. Declared
+   * once here: a `var()` in a custom property resolves against whichever value
+   * is live on :root, so these follow the dark overrides below for free.
+   */
+  --pb-stroke-danger: var(--pb-fg-danger);
+  --pb-stroke-ring-danger: var(--pb-bg-danger-soft);
+  --pb-chart-grid: var(--pb-stroke-default);
+  --pb-chart-axis: var(--pb-fg-subtle);
+  --pb-chart-cursor: var(--pb-bg-accent-subtle);
+  --pb-chart-dot: var(--pb-bg-surface);
+  --pb-meter-good: var(--pb-fg-success);
+  --pb-meter-poor: var(--pb-fg-danger);
+}
+
+/*
+ * Dark. The same role names re-bound, so no component contains a dark-mode
+ * style. Declared after `:root`, which it ties with on specificity, so source
+ * order is what decides.
+ */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --pb-bg-canvas: #0d0f15;
+  --pb-bg-surface: #161a23;
+  --pb-bg-subtle: #242936;
+  --pb-bg-accent-subtle: #1e2142;
+  --pb-bg-accent-soft: #272b52;
+  --pb-bg-accent-mark: #6e71f0;
+  --pb-bg-accent-solid: #7c7ef5;
+  --pb-bg-accent-solid-hover: #a9abff;
+  --pb-bg-success-soft: #13301f;
+  --pb-bg-warning-soft: #362709;
+  --pb-bg-danger-soft: #3b1618;
+  --pb-bg-danger-solid: #e5484d;
+  --pb-bg-danger-solid-hover: #cf3d42;
+  --pb-bg-scrim: rgb(0 0 0 / 0.6);
+
+  --pb-fg-default: #eef0f6;
+  --pb-fg-muted: #b6bdcd;
+  --pb-fg-subtle: #8a92a6;
+  --pb-fg-accent: #7c7ef5;
+  --pb-fg-accent-strong: #a9abff;
+  --pb-fg-success: #4ade80;
+  --pb-fg-warning: #fbbf24;
+  --pb-fg-danger: #f87171;
+
+  --pb-stroke-default: #262b38;
+  --pb-stroke-accent: #6e71f0;
+  --pb-stroke-ring: #3b4082;
+
+  --pb-chart-bar: #3e4293;
+  --pb-chart-bar-active: #6e71f0;
+  --pb-chart-target: #e0922a;
+
+  --pb-meter-fair: #e5a50a;
+
+  --pb-shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
+}
