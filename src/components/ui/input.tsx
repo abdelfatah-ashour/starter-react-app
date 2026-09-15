@@ -1,22 +1,45 @@
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import { color } from "@/styles/tokens.stylex";
+import { leading } from "@/styles/type.stylex";
+
+const styles = stylex.create({
+  base: {
+    height: 40,
+    width: "100%",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderStyle: "solid",
+    backgroundColor: color.surface,
+    paddingInline: 12,
+    fontSize: 14,
+    lineHeight: leading.sm,
+    color: color.ink,
+    outline: { default: null, ":focus": "none" },
+    "::placeholder": { color: color.inkMuted },
+  },
+  valid: {
+    borderColor: { default: color.hairline, ":focus-visible": color.brand500 },
+    boxShadow: { default: null, ":focus-visible": `0 0 0 2px ${color.brand200}` },
+  },
+  invalid: {
+    borderColor: color.bad,
+    boxShadow: { default: null, ":focus-visible": `0 0 0 2px ${color.badSoft}` },
+  },
+});
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   invalid?: boolean;
+  sx?: stylex.StyleXStyles;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, invalid, ...props }, ref) => (
+  ({ invalid, sx, ...props }, ref) => (
     <input
       ref={ref}
       aria-invalid={invalid || undefined}
-      className={cn(
-        "h-10 w-full rounded-lg border bg-surface px-3 text-sm text-ink placeholder:text-ink-muted",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-200",
-        invalid ? "border-bad focus-visible:ring-bad-soft" : "border-hairline focus-visible:border-brand-500",
-        className,
-      )}
       {...props}
+      {...stylex.props(styles.base, invalid ? styles.invalid : styles.valid, sx)}
     />
   ),
 );

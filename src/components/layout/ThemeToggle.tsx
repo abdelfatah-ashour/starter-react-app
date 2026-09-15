@@ -1,7 +1,12 @@
+import * as stylex from "@stylexjs/stylex";
 import { Moon, Sun } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/useTheme";
-import { useTranslation } from "react-i18next";
+
+const styles = stylex.create({
+  icon: { width: 18, height: 18 },
+});
 
 export function ThemeToggle() {
   const { t } = useTranslation();
@@ -17,12 +22,11 @@ export function ThemeToggle() {
       aria-pressed={isDark}
       aria-label={isDark ? t("nav.theme.toLight") : t("nav.theme.toDark")}
       title={isDark ? t("nav.theme.toLight") : t("nav.theme.toDark")}
-      className="text-ink-muted hover:text-ink"
     >
       {isDark ? (
-        <Sun className="size-[18px]" aria-hidden="true" />
+        <Sun aria-hidden="true" {...stylex.props(styles.icon)} />
       ) : (
-        <Moon className="size-[18px]" aria-hidden="true" />
+        <Moon aria-hidden="true" {...stylex.props(styles.icon)} />
       )}
     </Button>
   );

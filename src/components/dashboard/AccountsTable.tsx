@@ -1,5 +1,6 @@
+import * as stylex from "@stylexjs/stylex";
 import { Search } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,7 +19,9 @@ import { useSortable } from "@/hooks/useSortable";
 import { useTextFilter } from "@/hooks/useTextFilter";
 import { formatCurrency } from "@/lib/format";
 import type { Account } from "@/types";
-import { useTranslation } from "react-i18next";
+import { color } from "@/styles/tokens.stylex";
+import { bp } from "@/styles/breakpoints.stylex";
+import { common } from "@/styles/common";
 
 type ColumnKey = "name" | "plan" | "region" | "owner" | "mrr" | "seats" | "status" | "health";
 
@@ -43,6 +46,45 @@ const ACCESSORS: Record<ColumnKey, (account: Account) => string | number> = {
   health: (a) => a.health,
 };
 
+const styles = stylex.create({
+  search: {
+    position: "relative",
+    width: { default: "100%", [bp.lg]: 340 },
+  },
+  searchIcon: {
+    pointerEvents: "none",
+    position: "absolute",
+    top: "50%",
+    insetInlineStart: 12,
+    width: 16,
+    height: 16,
+    transform: "translateY(-50%)",
+    color: color.inkMuted,
+  },
+  searchInput: { paddingInlineStart: 36 },
+  content: { paddingInline: 20, paddingTop: 16 },
+  row: {
+    cursor: "pointer",
+    transitionProperty: "background-color",
+    transitionDuration: "150ms",
+    backgroundColor: { default: "transparent", ":hover": color.canvas },
+  },
+  rowSelected: {
+    backgroundColor: { default: color.brand50, ":hover": color.brand50 },
+  },
+  nameCell: {
+    fontWeight: 600,
+    whiteSpace: "nowrap",
+    color: color.ink,
+  },
+  nowrap: { whiteSpace: "nowrap" },
+  numeric: {
+    textAlign: "end",
+    fontVariantNumeric: "tabular-nums",
+  },
+  mrrCell: { color: color.ink },
+});
+
 interface AccountsTableProps {
   accounts: Account[];
   selectedId: string | null;
@@ -65,15 +107,10 @@ export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableP
       <CardHeader>
         <div>
           <CardTitle>{t("accounts.title")}</CardTitle>
-          <CardDescription>
-            {t("accounts.count", { count: accounts.length })}
-          </CardDescription>
+          <CardDescription>{t("accounts.count", { count: accounts.length })}</CardDescription>
         </div>
-        <div className="relative w-full lg:w-[340px]">
-          <Search
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 start-3 size-4 -translate-y-1/2 text-ink-muted"
-          />
+        <div {...stylex.props(styles.search)}>
+          <Search aria-hidden="true" {...stylex.props(styles.searchIcon)} />
           <Input
             data-testid="table-filter"
             type="search"
@@ -81,15 +118,15 @@ export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableP
             onChange={(event) => setQuery(event.target.value)}
             aria-label={t("accounts.filterLabel")}
             placeholder={t("accounts.filterPlaceholder")}
-            className="ps-9"
+            sx={styles.searchInput}
           />
         </div>
       </CardHeader>
 
-      <CardContent className="px-5 pt-4">
+      <CardContent sx={styles.content}>
         <TableScroll>
           <Table data-testid="accounts-table">
-            <caption className="sr-only">{t("accounts.caption")}</caption>
+            <caption {...stylex.props(common.srOnly)}>{t("accounts.caption")}</caption>
             <TableHead>
               <tr>
                 {COLUMNS.map((column) => (
@@ -125,19 +162,16 @@ export function AccountsTable({ accounts, selectedId, onSelect }: AccountsTableP
                       onSelect(account);
                     }
                   }}
-                  className={cn(
-                    "cursor-pointer transition-colors hover:bg-canvas",
-                    selectedId === account.id && "bg-brand-50 hover:bg-brand-50",
-                  )}
+                  sx={[styles.row, selectedId === account.id && styles.rowSelected]}
                 >
-                  <TableCell className="font-semibold whitespace-nowrap text-ink">{account.name}</TableCell>
+                  <TableCell sx={styles.nameCell}>{account.name}</TableCell>
                   <TableCell>{account.plan}</TableCell>
                   <TableCell>{account.region}</TableCell>
-                  <TableCell className="whitespace-nowrap">{account.owner}</TableCell>
-                  <TableCell data-testid="cell-mrr" className="text-end tabular-nums text-ink">
+                  <TableCell sx={styles.nowrap}>{account.owner}</TableCell>
+                  <TableCell data-testid="cell-mrr" sx={[styles.numeric, styles.mrrCell]}>
                     {formatCurrency(account.mrr)}
                   </TableCell>
-                  <TableCell className="text-end tabular-nums">{account.seats}</TableCell>
+                  <TableCell sx={styles.numeric}>{account.seats}</TableCell>
                   <TableCell>
                     <StatusBadge status={account.status} />
                   </TableCell>

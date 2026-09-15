@@ -1,24 +1,43 @@
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import { color } from "@/styles/tokens.stylex";
+
+const styles = stylex.create({
+  field: { minWidth: 0 },
+  term: { fontSize: 13, color: color.inkMuted },
+  value: {
+    marginTop: 4,
+    fontSize: 15,
+    fontWeight: 600,
+    overflowWrap: "break-word",
+    color: color.ink,
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    columnGap: 24,
+    rowGap: 20,
+  },
+});
 
 /** Label-over-value pair used throughout the account dialog. */
 export function Field({
   label,
   children,
-  className,
+  sx,
 }: {
   label: string;
   children: ReactNode;
-  className?: string;
+  sx?: stylex.StyleXStyles;
 }) {
   return (
-    <div className={cn("min-w-0", className)}>
-      <dt className="text-[13px] text-ink-muted">{label}</dt>
-      <dd className="mt-1 text-[15px] font-semibold break-words text-ink">{children}</dd>
+    <div {...stylex.props(styles.field, sx)}>
+      <dt {...stylex.props(styles.term)}>{label}</dt>
+      <dd {...stylex.props(styles.value)}>{children}</dd>
     </div>
   );
 }
 
-export function FieldGrid({ children, className }: { children: ReactNode; className?: string }) {
-  return <dl className={cn("grid grid-cols-2 gap-x-6 gap-y-5", className)}>{children}</dl>;
+export function FieldGrid({ children, sx }: { children: ReactNode; sx?: stylex.StyleXStyles }) {
+  return <dl {...stylex.props(styles.grid, sx)}>{children}</dl>;
 }

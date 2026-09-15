@@ -1,15 +1,21 @@
 import * as React from "react";
-import * as LabelPrimitive from "@radix-ui/react-label";
-import { cn } from "@/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import { color } from "@/styles/tokens.stylex";
 
-export const Label = React.forwardRef<
-  React.ComponentRef<typeof LabelPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <LabelPrimitive.Root
-    ref={ref}
-    className={cn("block text-[13px] font-medium text-ink-soft", className)}
-    {...props}
-  />
+const styles = stylex.create({
+  label: {
+    display: "block",
+    fontSize: 13,
+    fontWeight: 500,
+    color: color.inkSoft,
+  },
+});
+
+export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+  sx?: stylex.StyleXStyles;
+}
+
+export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(({ sx, ...props }, ref) => (
+  <label ref={ref} {...props} {...stylex.props(styles.label, sx)} />
 ));
 Label.displayName = "Label";

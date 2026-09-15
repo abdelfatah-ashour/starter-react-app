@@ -1,4 +1,6 @@
 import { useId, useState } from "react";
+import * as stylex from "@stylexjs/stylex";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogTitle, ModalContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +14,8 @@ import {
   type UserFormValues,
 } from "@/lib/schemas";
 import type { User, UserRole } from "@/types";
-import { useTranslation } from "react-i18next";
+import { color } from "@/styles/tokens.stylex";
+import { leading } from "@/styles/type.stylex";
 
 const ROLES: UserRole[] = ["Admin", "Manager", "Viewer"];
 
@@ -20,6 +23,34 @@ const emptyValues: UserFormValues = { name: "", email: "", role: "Viewer", team:
 
 const toValues = (user: User | null): UserFormValues =>
   user ? { name: user.name, email: user.email, role: user.role, team: user.team } : emptyValues;
+
+const styles = stylex.create({
+  content: { maxWidth: 460, padding: 28 },
+  eyebrow: { fontSize: 14, lineHeight: leading.sm, color: color.inkMuted },
+  title: {
+    marginTop: 2,
+    marginBottom: 24,
+    paddingInlineEnd: 48,
+    fontSize: 24,
+    lineHeight: "32px",
+    fontWeight: 700,
+    letterSpacing: "-0.02em",
+    color: color.ink,
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 20,
+  },
+  control: { marginTop: 6 },
+  error: { marginTop: 6, fontSize: 13, color: color.bad },
+  actions: {
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: 10,
+    paddingTop: 4,
+  },
+});
 
 interface UserFormDialogProps {
   open: boolean;
@@ -35,7 +66,11 @@ export function UserFormDialog({ open, editing, onSubmit, onCancel }: UserFormDi
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onCancel()}>
       {open ? (
-        <ModalContent data-testid="user-form-dialog" closeTestId="user-form-close" className="max-w-[460px] p-7">
+        <ModalContent
+          data-testid="user-form-dialog"
+          closeTestId="user-form-close"
+          sx={styles.content}
+        >
           <UserForm key={formKey} editing={editing} onSubmit={onSubmit} onCancel={onCancel} />
         </ModalContent>
       ) : null}
@@ -75,7 +110,7 @@ function UserForm({
       <p
         data-testid={primaryError === field ? "form-error" : undefined}
         role="alert"
-        className="mt-1.5 text-[13px] text-bad"
+        {...stylex.props(styles.error)}
       >
         {t(errors[field]!)}
       </p>
@@ -83,14 +118,14 @@ function UserForm({
 
   return (
     <>
-      <p className="text-sm text-ink-muted">
+      <p {...stylex.props(styles.eyebrow)}>
         {editing ? t("users.form.editEyebrow") : t("users.form.createEyebrow")}
       </p>
-      <DialogTitle className="mt-0.5 mb-6 pe-12 text-2xl leading-8 font-bold tracking-[-0.02em] text-ink">
+      <DialogTitle {...stylex.props(styles.title)}>
         {editing ? editing.name : t("users.form.createTitle")}
       </DialogTitle>
 
-      <form data-testid="user-form" onSubmit={handleSubmit} noValidate className="space-y-5">
+      <form data-testid="user-form" onSubmit={handleSubmit} noValidate {...stylex.props(styles.form)}>
         <div>
           <Label htmlFor={`${ids}-name`}>{t("users.form.name")}</Label>
           <Input
@@ -99,7 +134,7 @@ function UserForm({
             value={values.name}
             invalid={Boolean(errors.name)}
             onChange={(event) => set("name")(event.target.value)}
-            className="mt-1.5"
+            sx={styles.control}
             autoComplete="off"
           />
           {fieldError("name")}
@@ -114,7 +149,7 @@ function UserForm({
             value={values.email}
             invalid={Boolean(errors.email)}
             onChange={(event) => set("email")(event.target.value)}
-            className="mt-1.5"
+            sx={styles.control}
             autoComplete="off"
           />
           {fieldError("email")}
@@ -127,7 +162,7 @@ function UserForm({
             name="role"
             value={values.role}
             onChange={(event) => set("role")(event.target.value)}
-            className="mt-1.5"
+            sx={styles.control}
           >
             {ROLES.map((role) => (
               <option key={role} value={role}>
@@ -145,13 +180,13 @@ function UserForm({
             name="team"
             value={values.team}
             onChange={(event) => set("team")(event.target.value)}
-            className="mt-1.5"
+            sx={styles.control}
             autoComplete="off"
           />
           {fieldError("team")}
         </div>
 
-        <div className="flex justify-end gap-2.5 pt-1">
+        <div {...stylex.props(styles.actions)}>
           <Button type="button" variant="outline" data-testid="user-cancel" onClick={onCancel}>
             {t("common.cancel")}
           </Button>

@@ -1,10 +1,16 @@
-@import "tailwindcss";
+/*
+ * Design tokens as plain CSS custom properties.
+ *
+ * StyleX cannot emit variable overrides behind an arbitrary selector such as
+ * `[data-theme="dark"]`, and the theme has to be settable before first paint by
+ * the inline script in index.html so there is no flash of the wrong theme.
+ * So the raw values live here, and `src/styles/tokens.stylex.ts` re-exports them
+ * as typed StyleX variables for components to use.
+ */
 
-/* Theme is an explicit attribute on <html>, set before first paint by the
-   inline script in index.html, so there is no flash of the wrong theme. */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+:root {
+  color-scheme: light;
 
-@theme {
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --color-canvas: #f1f3f7;
@@ -32,6 +38,7 @@
   --color-bad-soft: #fde4e4;
   --color-neutral-soft: #eceef2;
   --color-danger-solid: #dc2626;
+  --color-danger-solid-hover: #c11f1f;
   --color-scrim: rgb(16 19 26 / 0.15);
 
   --color-bar: #b0b6ef;
@@ -39,12 +46,19 @@
   --color-target: #c2710c;
 
   --radius-card: 14px;
+  --shadow-card: 0 1px 2px rgb(16 19 26 / 0.04);
+  --shadow-raised: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-popover: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
-
-/* Dark theme: the same token names re-bound, so every component inherits it
-   without a single `dark:` utility. */
+/*
+ * Dark theme: the same token names re-bound, so every component inherits it
+ * without a single dark-mode style in any component. Declared after `:root`,
+ * which it ties with on specificity, so source order decides.
+ */
 [data-theme="dark"] {
+  color-scheme: dark;
+
   --color-canvas: #0d0f15;
   --color-surface: #161a23;
   --color-hairline: #262b38;
@@ -70,60 +84,12 @@
   --color-bad-soft: #3b1618;
   --color-neutral-soft: #242936;
   --color-danger-solid: #e5484d;
+  --color-danger-solid-hover: #cf3d42;
   --color-scrim: rgb(0 0 0 / 0.6);
 
   --color-bar: #3e4293;
   --color-bar-accent: #6e71f0;
   --color-target: #e0922a;
 
-  color-scheme: dark;
-}
-
-:root {
-  color-scheme: light;
-}
-
-@layer base {
-  html {
-    -webkit-font-smoothing: antialiased;
-  }
-  body {
-    margin: 0;
-    background: var(--color-canvas);
-    color: var(--color-ink);
-    font-family: var(--font-sans);
-    font-size: 14px;
-  }
-  :focus-visible {
-    outline: 2px solid var(--color-brand-600);
-    outline-offset: 2px;
-  }
-}
-
-@utility card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-hairline);
-  border-radius: var(--radius-card);
-  box-shadow: 0 1px 2px rgb(16 19 26 / 0.04);
-}
-
-[data-theme="dark"] .card {
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
-}
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-@keyframes pop-in {
-  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-@keyframes pop-out {
-  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  to { opacity: 0; transform: translate(-50%, -48%) scale(0.98); }
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3);
 }

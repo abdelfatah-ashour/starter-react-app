@@ -1,7 +1,24 @@
+import * as stylex from "@stylexjs/stylex";
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { TableHeaderCell } from "@/components/ui/table";
 import type { SortDirection } from "@/hooks/useSortable";
+import { color } from "@/styles/tokens.stylex";
+
+const styles = stylex.create({
+  alignEnd: { textAlign: "end" },
+  button: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 4,
+    borderRadius: 4,
+    color: { default: "inherit", ":hover": color.ink },
+    transitionProperty: "color",
+    transitionDuration: "150ms",
+  },
+  reversed: { flexDirection: "row-reverse" },
+  sorted: { fontWeight: 500, color: color.inkSoft },
+  icon: { width: 14, height: 14 },
+});
 
 interface SortableHeaderProps {
   /** Also forms the hook: `sort-mrr`. */
@@ -10,7 +27,7 @@ interface SortableHeaderProps {
   direction: SortDirection | null;
   onToggle: () => void;
   align?: "left" | "right";
-  className?: string;
+  sx?: stylex.StyleXStyles;
 }
 
 /** A column header that doubles as the sort control. */
@@ -20,27 +37,28 @@ export function SortableHeader({
   direction,
   onToggle,
   align = "left",
-  className,
+  sx,
 }: SortableHeaderProps) {
   const ariaSort = direction === "asc" ? "ascending" : direction === "desc" ? "descending" : "none";
+  const end = align === "right";
 
   return (
-    <TableHeaderCell aria-sort={ariaSort} className={cn(align === "right" && "text-right", className)}>
+    <TableHeaderCell aria-sort={ariaSort} sx={[end && styles.alignEnd, sx]}>
       <button
         type="button"
         data-testid={`sort-${columnKey}`}
         onClick={onToggle}
-        className={cn(
-          "inline-flex items-center gap-1 rounded transition-colors hover:text-ink",
-          direction && "font-medium text-ink-soft",
-          align === "right" && "flex-row-reverse",
+        {...stylex.props(
+          styles.button,
+          direction && styles.sorted,
+          end && styles.reversed,
         )}
       >
         <span>{label}</span>
         {direction === "asc" ? (
-          <ArrowUp className="size-3.5" aria-hidden="true" />
+          <ArrowUp aria-hidden="true" {...stylex.props(styles.icon)} />
         ) : direction === "desc" ? (
-          <ArrowDown className="size-3.5" aria-hidden="true" />
+          <ArrowDown aria-hidden="true" {...stylex.props(styles.icon)} />
         ) : null}
       </button>
     </TableHeaderCell>

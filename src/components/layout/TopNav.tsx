@@ -1,13 +1,90 @@
+import * as stylex from "@stylexjs/stylex";
 import { useTranslation } from "react-i18next";
 import { LogOut } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
+import { color } from "@/styles/tokens.stylex";
+import { bp } from "@/styles/breakpoints.stylex";
+import { leading } from "@/styles/type.stylex";
 
 export type PageKey = "dashboard" | "users";
 
 const LINKS: PageKey[] = ["dashboard", "users"];
+
+const styles = stylex.create({
+  header: {
+    position: "sticky",
+    top: 0,
+    zIndex: 30,
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    borderStyle: "solid",
+    borderColor: color.hairline,
+    backgroundColor: color.surface,
+  },
+  bar: {
+    display: "flex",
+    height: 56,
+    alignItems: "center",
+    gap: { default: 12, [bp.sm]: 24 },
+    paddingInline: { default: 8, [bp.sm]: 16, [bp.lg]: 32 },
+  },
+  brand: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+  },
+  mark: {
+    width: 28,
+    height: 28,
+    flexShrink: 0,
+    borderRadius: 9,
+    backgroundColor: color.brand500,
+  },
+  wordmark: {
+    fontSize: 17,
+    fontWeight: 700,
+    letterSpacing: "-0.01em",
+    color: color.ink,
+  },
+  nav: {
+    display: "flex",
+    alignItems: "center",
+    gap: 4,
+  },
+  link: {
+    borderRadius: 8,
+    paddingInline: 12,
+    paddingBlock: 6,
+    fontSize: 14,
+    lineHeight: leading.sm,
+    fontWeight: 500,
+    transitionProperty: "background-color, color",
+    transitionDuration: "150ms",
+  },
+  linkActive: {
+    backgroundColor: color.brand50,
+    color: color.brand600,
+  },
+  linkIdle: {
+    backgroundColor: { default: "transparent", ":hover": color.canvas },
+    color: { default: color.inkMuted, ":hover": color.ink },
+  },
+  actions: {
+    marginInlineStart: "auto",
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+  },
+  period: {
+    display: { default: "none", [bp.lg]: "block" },
+    fontSize: 14,
+    lineHeight: leading.sm,
+    color: color.inkMuted,
+  },
+  icon: { width: 18, height: 18 },
+});
 
 interface TopNavProps {
   current: PageKey;
@@ -20,14 +97,14 @@ export function TopNav({ current, onNavigate, period, onSignOut }: TopNavProps) 
   const { t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-hairline bg-surface">
-      <div className="flex h-14 items-center gap-3 px-2 sm:gap-6 sm:px-4 lg:px-8">
-        <div className="flex items-center gap-3">
-          <span aria-hidden="true" className="size-7 shrink-0 rounded-[9px] bg-brand-500" />
-          <h1 className="text-[17px] font-bold tracking-[-0.01em] text-ink">{t("app.name")}</h1>
+    <header {...stylex.props(styles.header)}>
+      <div {...stylex.props(styles.bar)}>
+        <div {...stylex.props(styles.brand)}>
+          <span aria-hidden="true" {...stylex.props(styles.mark)} />
+          <h1 {...stylex.props(styles.wordmark)}>{t("app.name")}</h1>
         </div>
 
-        <nav aria-label={t("nav.primary")} className="flex items-center gap-1">
+        <nav aria-label={t("nav.primary")} {...stylex.props(styles.nav)}>
           {LINKS.map((key) => {
             const active = current === key;
             return (
@@ -37,12 +114,7 @@ export function TopNav({ current, onNavigate, period, onSignOut }: TopNavProps) 
                 data-testid={`nav-${key}`}
                 aria-current={active ? "page" : undefined}
                 onClick={() => onNavigate(key)}
-                className={cn(
-                  "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-brand-50 text-brand-600"
-                    : "text-ink-muted hover:bg-canvas hover:text-ink",
-                )}
+                {...stylex.props(styles.link, active ? styles.linkActive : styles.linkIdle)}
               >
                 {t(`nav.${key}`)}
               </button>
@@ -50,8 +122,8 @@ export function TopNav({ current, onNavigate, period, onSignOut }: TopNavProps) 
           })}
         </nav>
 
-        <div className="ms-auto flex items-center gap-2">
-          {period ? <p className="hidden text-sm text-ink-muted lg:block">{period}</p> : null}
+        <div {...stylex.props(styles.actions)}>
+          {period ? <p {...stylex.props(styles.period)}>{period}</p> : null}
           <LanguageToggle />
           <ThemeToggle />
           <Button
@@ -61,9 +133,8 @@ export function TopNav({ current, onNavigate, period, onSignOut }: TopNavProps) 
             onClick={onSignOut}
             aria-label={t("nav.signOut")}
             title={t("nav.signOut")}
-            className="text-ink-muted hover:text-ink"
           >
-            <LogOut className="size-[18px]" aria-hidden="true" />
+            <LogOut aria-hidden="true" {...stylex.props(styles.icon)} />
           </Button>
         </div>
       </div>

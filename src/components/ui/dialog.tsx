@@ -1,26 +1,63 @@
 import * as React from "react";
+import * as stylex from "@stylexjs/stylex";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { color } from "@/styles/tokens.stylex";
+import { common } from "@/styles/common";
 
 export const Dialog = DialogPrimitive.Root;
 export const DialogTitle = DialogPrimitive.Title;
 export const DialogDescription = DialogPrimitive.Description;
 export const DialogClose = DialogPrimitive.Close;
 
+const styles = stylex.create({
+  overlay: {
+    position: "fixed",
+    inset: 0,
+    zIndex: 40,
+    backgroundColor: color.scrim,
+  },
+  content: {
+    position: "fixed",
+    top: "50%",
+    insetInlineStart: "50%",
+    zIndex: 50,
+    display: "flex",
+    flexDirection: "column",
+    maxHeight: "calc(100dvh - 48px)",
+    width: "calc(100vw - 24px)",
+    maxWidth: 420,
+    transform: "translate(-50%, -50%)",
+    overflowY: "auto",
+    padding: 24,
+  },
+  close: {
+    position: "absolute",
+    top: 24,
+    insetInlineEnd: 24,
+    color: color.ink,
+  },
+  closeIcon: {
+    width: 16,
+    height: 16,
+  },
+});
+
+/**
+ * The open/close transitions live in `global.css`: they key off Radix's
+ * `data-state` attribute, and StyleX styles cannot target arbitrary attributes.
+ */
 const Overlay = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
+>((props, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    className={cn(
-      "fixed inset-0 z-40 bg-scrim data-[state=open]:animate-[fade-in_150ms_ease-out] data-[state=closed]:animate-[fade-out_120ms_ease-in]",
-      className,
-    )}
+    data-pb-anim="overlay"
     {...props}
+    {...stylex.props(styles.overlay)}
   />
 ));
 Overlay.displayName = "DialogOverlay";
@@ -29,6 +66,7 @@ export interface ModalContentProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   /** Renders a close button in the corner under this hook. */
   closeTestId?: string;
+  sx?: stylex.StyleXStyles;
 }
 
 /**
@@ -38,36 +76,33 @@ export interface ModalContentProps
 export const ModalContent = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Content>,
   ModalContentProps
->(({ className, children, closeTestId, ...props }, ref) => {
+>(({ children, closeTestId, sx, ...props }, ref) => {
   const { t } = useTranslation();
   return (
-  <DialogPrimitive.Portal>
-    <Overlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      aria-describedby={undefined}
-      className={cn(
-        "card fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-48px)] w-[calc(100vw-24px)] max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto p-6",
-        "data-[state=open]:animate-[pop-in_170ms_cubic-bezier(0.32,0.72,0,1)] data-[state=closed]:animate-[pop-out_130ms_ease-in]",
-        className,
-      )}
-      {...props}
-    >
-      {closeTestId ? (
-        <DialogPrimitive.Close asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            data-testid={closeTestId}
-            className="absolute top-6 end-6 text-ink"
-            aria-label={t("common.close")}
-          >
-            <X className="size-4" aria-hidden="true" />
-          </Button>
-        </DialogPrimitive.Close>
-      ) : null}
-      {children}
-    </DialogPrimitive.Content>
+    <DialogPrimitive.Portal>
+      <Overlay />
+      <DialogPrimitive.Content
+        ref={ref}
+        aria-describedby={undefined}
+        data-pb-anim="modal"
+        {...props}
+        {...stylex.props(common.card, styles.content, sx)}
+      >
+        {closeTestId ? (
+          <DialogPrimitive.Close asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              data-testid={closeTestId}
+              sx={styles.close}
+              aria-label={t("common.close")}
+            >
+              <X aria-hidden="true" {...stylex.props(styles.closeIcon)} />
+            </Button>
+          </DialogPrimitive.Close>
+        ) : null}
+        {children}
+      </DialogPrimitive.Content>
     </DialogPrimitive.Portal>
   );
 });

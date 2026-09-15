@@ -1,0 +1,127 @@
+@import "./theme.css";
+
+/*
+ * The only hand-written CSS in the app besides the tokens. Everything else is
+ * StyleX. What lives here is what StyleX deliberately does not cover: document
+ * level element styling, and the dialog enter/exit animations, which key off
+ * Radix's `data-state` attribute — StyleX styles support pseudo-classes and
+ * media queries, but not arbitrary attribute selectors.
+ *
+ * The element reset sits in its own cascade layer, declared ahead of StyleX's
+ * layers by `useCSSLayers: { before: ["reset"] }` in vite.config.ts. Without
+ * that, these bare element selectors would outrank every StyleX style, because
+ * unlayered CSS beats layered CSS no matter how specific the layered rule is.
+ */
+@layer reset {
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+
+  html {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  button,
+  input,
+  optgroup,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    background: transparent;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    display: block;
+    vertical-align: middle;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  ol,
+  ul {
+    list-style: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes pb-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pb-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes pb-pop-in {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes pb-pop-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -48%) scale(0.98); }
+}
+
+[data-pb-anim="overlay"][data-state="open"] {
+  animation: pb-fade-in 150ms ease-out;
+}
+[data-pb-anim="overlay"][data-state="closed"] {
+  animation: pb-fade-out 120ms ease-in;
+}
+[data-pb-anim="modal"][data-state="open"] {
+  animation: pb-pop-in 170ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+[data-pb-anim="modal"][data-state="closed"] {
+  animation: pb-pop-out 130ms ease-in;
+}

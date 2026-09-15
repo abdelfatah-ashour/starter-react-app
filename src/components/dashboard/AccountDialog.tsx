@@ -1,10 +1,59 @@
+import * as stylex from "@stylexjs/stylex";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogTitle, ModalContent } from "@/components/ui/dialog";
 import { Field, FieldGrid } from "@/components/shared/FieldGrid";
 import { HealthBar } from "@/components/shared/HealthBar";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { formatCurrency, formatDate, formatNumber } from "@/lib/format";
 import type { Account } from "@/types";
-import { useTranslation } from "react-i18next";
+import { color } from "@/styles/tokens.stylex";
+import { bp } from "@/styles/breakpoints.stylex";
+import { leading } from "@/styles/type.stylex";
+
+const styles = stylex.create({
+  content: {
+    maxWidth: 560,
+    padding: 28,
+  },
+  eyebrow: {
+    fontSize: 14,
+    lineHeight: leading.sm,
+    color: color.inkMuted,
+  },
+  title: {
+    marginTop: 2,
+    marginBottom: 28,
+    paddingInlineEnd: 48,
+    fontSize: 24,
+    lineHeight: "32px",
+    fontWeight: 700,
+    letterSpacing: "-0.02em",
+    color: color.ink,
+  },
+  grid: {
+    gridTemplateColumns: {
+      default: "repeat(2, minmax(0, 1fr))",
+      [bp.sm]: "repeat(4, minmax(0, 1fr))",
+    },
+  },
+  list: {
+    marginTop: 24,
+    display: "flex",
+    flexDirection: "column",
+    gap: 20,
+  },
+  term: { fontSize: 13, color: color.inkMuted },
+  value: { marginTop: 4, fontSize: 15, fontWeight: 600, color: color.ink },
+  emailRow: { marginTop: 2 },
+  email: {
+    fontSize: 15,
+    fontWeight: 500,
+    textDecorationLine: "underline",
+    textUnderlineOffset: 2,
+    color: { default: color.brand600, ":hover": color.brand700 },
+  },
+  notes: { marginTop: 4, fontSize: 15, lineHeight: "24px", color: color.ink },
+});
 
 interface AccountDialogProps {
   account: Account | null;
@@ -20,17 +69,11 @@ export function AccountDialog({ account, onClose }: AccountDialogProps) {
   return (
     <Dialog open={account !== null} onOpenChange={(open) => !open && onClose()}>
       {account ? (
-        <ModalContent
-          data-testid="detail-drawer"
-          closeTestId="drawer-close"
-          className="max-w-[560px] p-7"
-        >
-          <p className="text-sm text-ink-muted">{t("accounts.detail.eyebrow")}</p>
-          <DialogTitle className="mt-0.5 mb-7 pe-12 text-2xl leading-8 font-bold tracking-[-0.02em] text-ink">
-            {account.name}
-          </DialogTitle>
+        <ModalContent data-testid="detail-drawer" closeTestId="drawer-close" sx={styles.content}>
+          <p {...stylex.props(styles.eyebrow)}>{t("accounts.detail.eyebrow")}</p>
+          <DialogTitle {...stylex.props(styles.title)}>{account.name}</DialogTitle>
 
-          <FieldGrid className="sm:grid-cols-4">
+          <FieldGrid sx={styles.grid}>
             <Field label={t("accounts.columns.plan")}>{account.plan}</Field>
             <Field label={t("accounts.columns.region")}>{account.region}</Field>
             <Field label={t("accounts.columns.mrr")}>{formatCurrency(account.mrr)}</Field>
@@ -45,22 +88,19 @@ export function AccountDialog({ account, onClose }: AccountDialogProps) {
             <Field label={t("accounts.detail.lastActive")}>{formatDate(account.lastActiveAt)}</Field>
           </FieldGrid>
 
-          <dl className="mt-6 space-y-5">
+          <dl {...stylex.props(styles.list)}>
             <div>
-              <dt className="text-[13px] text-ink-muted">{t("accounts.detail.owner")}</dt>
-              <dd className="mt-1 text-[15px] font-semibold text-ink">{account.owner}</dd>
-              <dd className="mt-0.5">
-                <a
-                  href={`mailto:${account.ownerEmail}`}
-                  className="text-[15px] font-medium text-brand-600 underline underline-offset-2 hover:text-brand-700"
-                >
+              <dt {...stylex.props(styles.term)}>{t("accounts.detail.owner")}</dt>
+              <dd {...stylex.props(styles.value)}>{account.owner}</dd>
+              <dd {...stylex.props(styles.emailRow)}>
+                <a href={`mailto:${account.ownerEmail}`} {...stylex.props(styles.email)}>
                   {account.ownerEmail}
                 </a>
               </dd>
             </div>
             <div>
-              <dt className="text-[13px] text-ink-muted">{t("accounts.detail.notes")}</dt>
-              <dd className="mt-1 text-[15px] leading-6 text-ink">{account.notes}</dd>
+              <dt {...stylex.props(styles.term)}>{t("accounts.detail.notes")}</dt>
+              <dd {...stylex.props(styles.notes)}>{account.notes}</dd>
             </div>
           </dl>
         </ModalContent>

@@ -1,3 +1,5 @@
+import * as stylex from "@stylexjs/stylex";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -13,9 +15,33 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { formatDate } from "@/lib/format";
 import type { User } from "@/types";
-import { useTranslation } from "react-i18next";
+import { color } from "@/styles/tokens.stylex";
+import { common } from "@/styles/common";
 
 const COLUMNS = ["name", "email", "role", "team", "status", "lastLogin"] as const;
+
+const styles = stylex.create({
+  alignEnd: { textAlign: "end" },
+  row: {
+    backgroundColor: { default: "transparent", ":hover": color.canvas },
+  },
+  nameCell: {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+  },
+  name: {
+    fontWeight: 600,
+    whiteSpace: "nowrap",
+    color: color.ink,
+  },
+  nowrap: { whiteSpace: "nowrap" },
+  actions: {
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: 8,
+  },
+});
 
 interface UsersTableProps {
   users: User[];
@@ -33,35 +59,35 @@ export function UsersTable({ users, onEdit, onDelete }: UsersTableProps) {
   return (
     <TableScroll>
       <Table data-testid="users-table">
-        <caption className="sr-only">{t("users.caption")}</caption>
+        <caption {...stylex.props(common.srOnly)}>{t("users.caption")}</caption>
         <TableHead>
           <tr>
             {COLUMNS.map((key) => (
               <TableHeaderCell key={key}>{t(`users.columns.${key}`)}</TableHeaderCell>
             ))}
-            <TableHeaderCell className="text-end">
-              <span className="sr-only">{t("users.columns.actions")}</span>
+            <TableHeaderCell sx={styles.alignEnd}>
+              <span {...stylex.props(common.srOnly)}>{t("users.columns.actions")}</span>
             </TableHeaderCell>
           </tr>
         </TableHead>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user.id} data-testid="user-row" data-user-id={user.id} className="hover:bg-canvas">
+            <TableRow key={user.id} data-testid="user-row" data-user-id={user.id} sx={styles.row}>
               <TableCell>
-                <span className="flex items-center gap-3">
+                <span {...stylex.props(styles.nameCell)}>
                   <Avatar name={user.name} />
-                  <span className="font-semibold whitespace-nowrap text-ink">{user.name}</span>
+                  <span {...stylex.props(styles.name)}>{user.name}</span>
                 </span>
               </TableCell>
-              <TableCell className="whitespace-nowrap">{user.email}</TableCell>
+              <TableCell sx={styles.nowrap}>{user.email}</TableCell>
               <TableCell>{t(`role.${user.role}`)}</TableCell>
-              <TableCell className="whitespace-nowrap">{user.team}</TableCell>
+              <TableCell sx={styles.nowrap}>{user.team}</TableCell>
               <TableCell>
                 <StatusBadge status={user.status} />
               </TableCell>
-              <TableCell className="whitespace-nowrap">{formatDate(user.lastLoginAt)}</TableCell>
-              <TableCell className="text-end">
-                <span className="flex justify-end gap-2">
+              <TableCell sx={styles.nowrap}>{formatDate(user.lastLoginAt)}</TableCell>
+              <TableCell sx={styles.alignEnd}>
+                <span {...stylex.props(styles.actions)}>
                   <Button
                     variant="outline"
                     size="sm"

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as stylex from "@stylexjs/stylex";
 import { useTranslation } from "react-i18next";
 import { TopNav, type PageKey } from "@/components/layout/TopNav";
 import { DashboardPage } from "@/pages/DashboardPage";
@@ -8,6 +9,34 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useUsers } from "@/hooks/useUsers";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useAuth } from "@/hooks/useAuth";
+import { color } from "@/styles/tokens.stylex";
+import { bp } from "@/styles/breakpoints.stylex";
+import { leading } from "@/styles/type.stylex";
+
+const styles = stylex.create({
+  shell: {
+    minHeight: "100dvh",
+    backgroundColor: color.canvas,
+  },
+  main: {
+    paddingInline: { default: 8, [bp.sm]: 16, [bp.lg]: 32 },
+    paddingBlock: 24,
+  },
+  status: {
+    paddingBlock: 80,
+    textAlign: "center",
+    fontSize: 14,
+    lineHeight: leading.sm,
+    color: color.inkMuted,
+  },
+  error: {
+    paddingBlock: 80,
+    textAlign: "center",
+    fontSize: 14,
+    lineHeight: leading.sm,
+    color: color.bad,
+  },
+});
 
 /**
  * PulseBoard shell. Both pages live under one state root so Users edits survive
@@ -26,7 +55,7 @@ export default function App() {
   if (!isAuthenticated) return <LoginPage />;
 
   return (
-    <div className="min-h-dvh bg-canvas">
+    <div {...stylex.props(styles.shell)}>
       <TopNav
         current={page}
         onNavigate={setPage}
@@ -40,15 +69,15 @@ export default function App() {
         }
       />
 
-      <main className="px-2 py-6 sm:px-4 lg:px-8">
+      <main {...stylex.props(styles.main)}>
         {state.status === "loading" ? (
-          <p className="py-20 text-center text-sm text-ink-muted" role="status">
+          <p role="status" {...stylex.props(styles.status)}>
             {t("common.loading")}
           </p>
         ) : null}
 
         {state.status === "error" ? (
-          <p className="py-20 text-center text-sm text-bad" role="alert">
+          <p role="alert" {...stylex.props(styles.error)}>
             {t("common.loadError", { message: state.error })}
           </p>
         ) : null}

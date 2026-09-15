@@ -1,27 +1,33 @@
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import { color } from "@/styles/tokens.stylex";
+import { leading } from "@/styles/type.stylex";
 
-const badgeVariants = cva(
-  "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap",
-  {
-    variants: {
-      tone: {
-        good: "bg-good-soft text-good",
-        warn: "bg-warn-soft text-warn",
-        bad: "bg-bad-soft text-bad",
-        brand: "bg-brand-50 text-brand-700",
-        neutral: "bg-neutral-soft text-ink-muted",
-      },
-    },
-    defaultVariants: { tone: "neutral" },
+const styles = stylex.create({
+  base: {
+    display: "inline-flex",
+    alignItems: "center",
+    borderRadius: 9999,
+    paddingInline: 10,
+    paddingBlock: 4,
+    fontSize: 12,
+    lineHeight: leading.xs,
+    fontWeight: 600,
+    whiteSpace: "nowrap",
   },
-);
+  good: { backgroundColor: color.goodSoft, color: color.good },
+  warn: { backgroundColor: color.warnSoft, color: color.warn },
+  bad: { backgroundColor: color.badSoft, color: color.bad },
+  brand: { backgroundColor: color.brand50, color: color.brand700 },
+  neutral: { backgroundColor: color.neutralSoft, color: color.inkMuted },
+});
 
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {}
+export type BadgeTone = "good" | "warn" | "bad" | "brand" | "neutral";
 
-export function Badge({ className, tone, ...props }: BadgeProps) {
-  return <span className={cn(badgeVariants({ tone }), className)} {...props} />;
+export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+  tone?: BadgeTone;
+}
+
+export function Badge({ tone = "neutral", ...props }: BadgeProps) {
+  return <span {...props} {...stylex.props(styles.base, styles[tone])} />;
 }

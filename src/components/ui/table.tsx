@@ -1,47 +1,82 @@
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import { color } from "@/styles/tokens.stylex";
+import { bp } from "@/styles/breakpoints.stylex";
+import { leading } from "@/styles/type.stylex";
 
-export function TableScroll({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("relative w-full overflow-x-auto", className)} {...props} />;
+const styles = stylex.create({
+  scroll: {
+    position: "relative",
+    width: "100%",
+    overflowX: "auto",
+  },
+  table: {
+    width: "100%",
+    minWidth: 640,
+    textAlign: "start",
+    fontSize: 14,
+    lineHeight: leading.sm,
+  },
+  row: {
+    borderWidth: 0,
+    borderBottomWidth: { default: 1, ":last-child": 0 },
+    borderStyle: "solid",
+    borderColor: color.hairline,
+  },
+  headerCell: {
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    borderStyle: "solid",
+    borderColor: color.hairline,
+    paddingInline: { default: 8, [bp.xl]: 12 },
+    paddingBottom: 10,
+    textAlign: "start",
+    fontSize: 13,
+    fontWeight: 400,
+    color: color.inkMuted,
+  },
+  cell: {
+    paddingInline: { default: 8, [bp.xl]: 12 },
+    paddingBlock: 7,
+    verticalAlign: "middle",
+    color: color.inkSoft,
+  },
+});
+
+interface Styled {
+  sx?: stylex.StyleXStyles;
 }
 
-export function Table({ className, ...props }: React.TableHTMLAttributes<HTMLTableElement>) {
-  return (
-    <table
-      className={cn("w-full min-w-[640px] border-collapse text-left text-sm", className)}
-      {...props}
-    />
-  );
+export function TableScroll({ sx, ...props }: React.HTMLAttributes<HTMLDivElement> & Styled) {
+  return <div {...props} {...stylex.props(styles.scroll, sx)} />;
 }
 
-export function TableHead({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={cn("", className)} {...props} />;
+export function Table({ sx, ...props }: React.TableHTMLAttributes<HTMLTableElement> & Styled) {
+  return <table {...props} {...stylex.props(styles.table, sx)} />;
 }
 
-export function TableBody({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) {
-  return <tbody className={cn("", className)} {...props} />;
+export function TableHead(props: React.HTMLAttributes<HTMLTableSectionElement>) {
+  return <thead {...props} />;
 }
 
-export function TableRow({ className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) {
-  return <tr className={cn("border-b border-hairline last:border-0", className)} {...props} />;
+export function TableBody(props: React.HTMLAttributes<HTMLTableSectionElement>) {
+  return <tbody {...props} />;
+}
+
+export function TableRow({ sx, ...props }: React.HTMLAttributes<HTMLTableRowElement> & Styled) {
+  return <tr {...props} {...stylex.props(styles.row, sx)} />;
 }
 
 export function TableHeaderCell({
-  className,
+  sx,
   ...props
-}: React.ThHTMLAttributes<HTMLTableCellElement>) {
-  return (
-    <th
-      scope="col"
-      className={cn(
-        "border-b border-hairline px-2 pb-2.5 text-[13px] font-normal text-ink-muted xl:px-3",
-        className,
-      )}
-      {...props}
-    />
-  );
+}: React.ThHTMLAttributes<HTMLTableCellElement> & Styled) {
+  return <th scope="col" {...props} {...stylex.props(styles.headerCell, sx)} />;
 }
 
-export function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn("px-2 py-[7px] align-middle text-ink-soft xl:px-3", className)} {...props} />;
+export function TableCell({
+  sx,
+  ...props
+}: React.TdHTMLAttributes<HTMLTableCellElement> & Styled) {
+  return <td {...props} {...stylex.props(styles.cell, sx)} />;
 }

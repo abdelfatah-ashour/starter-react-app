@@ -1,6 +1,7 @@
 # PulseBoard — build checklist
 
-Stack: React 19 + TypeScript + Vite · TailwindCSS · shadcn/ui · Recharts · Zod · Playwright
+Stack: React 19 + TypeScript + Vite · StyleX · Recharts · Zod · Playwright
+(Sections 0–13 record the original Tailwind/shadcn build; section 14 replaced that styling layer.)
 
 ## 0. Tooling & stack setup
 - [x] Install Tailwind CSS v4 + `@tailwindcss/vite`, wire into `vite.config.ts`
@@ -121,3 +122,17 @@ Stack: React 19 + TypeScript + Vite · TailwindCSS · shadcn/ui · Recharts · Z
 - [x] Vercel CLI authenticated (`abdelfatahashour4`), project linked as `pulseboard`
 - [ ] Production deploy — blocked, `fetch failed` during upload; retry was interrupted
 - [ ] Live URL verified
+
+## 14. Styling: Tailwind + shadcn -> StyleX
+- [x] `@stylexjs/stylex` + `@stylexjs/unplugin` wired into `vite.config.ts`
+- [x] StyleX alias resolution (`unstable_moduleResolution` + `aliases`) so `@/…` imports of `*.stylex.ts` resolve
+- [x] `styles/theme.css` — tokens as CSS custom properties, light and `[data-theme="dark"]`
+- [x] `styles/tokens.stylex.ts` — typed StyleX handles (`color`, `font`, `radius`, `shadow`) onto those properties
+- [x] `styles/breakpoints.stylex.ts` + `styles/type.stylex.ts` — shared media queries and line-height ratios via `defineConsts`
+- [x] `styles/common.ts` — `srOnly`, `card`, `tabularNums` atoms
+- [x] `styles/global.css` — element reset in a `reset` cascade layer declared before StyleX's layers
+- [x] Every component restyled: `className`/`cn` replaced by `stylex.props`, overrides by an `sx` prop
+- [x] Dropped `tailwindcss`, `@tailwindcss/vite`, `class-variance-authority`, `clsx`, `tailwind-merge`, `@radix-ui/react-label`, `@radix-ui/react-slot`
+- [x] Kept `@radix-ui/react-dialog` — modal focus trap / Escape / `role="dialog"` are behaviour, not styling
+- [x] Dialog enter/exit animations stay in `global.css`: they key off Radix `data-state`, which StyleX cannot target
+- [x] Verified: 35/35 Playwright tests pass, 16/16 screenshots pixel-identical to the Tailwind build (bar a select-chevron centring fix)

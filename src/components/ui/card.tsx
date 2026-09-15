@@ -1,27 +1,58 @@
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as stylex from "@stylexjs/stylex";
+import { color } from "@/styles/tokens.stylex";
+import { common } from "@/styles/common";
 
-export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("card", className)} {...props} />;
+const styles = stylex.create({
+  header: {
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingInline: 20,
+    paddingTop: 20,
+  },
+  title: {
+    fontSize: 15,
+    lineHeight: "20px",
+    fontWeight: 700,
+    color: color.ink,
+  },
+  description: {
+    marginTop: 2,
+    fontSize: 13,
+    color: color.inkMuted,
+  },
+  content: {
+    paddingInline: 20,
+    paddingBottom: 20,
+  },
+});
+
+interface Styled {
+  sx?: stylex.StyleXStyles;
 }
 
-export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("flex flex-wrap items-start justify-between gap-3 px-5 pt-5", className)}
-      {...props}
-    />
-  );
+export function Card({ sx, ...props }: React.HTMLAttributes<HTMLDivElement> & Styled) {
+  return <div {...props} {...stylex.props(common.card, sx)} />;
 }
 
-export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn("text-[15px] leading-5 font-bold text-ink", className)} {...props} />;
+export function CardHeader({ sx, ...props }: React.HTMLAttributes<HTMLDivElement> & Styled) {
+  return <div {...props} {...stylex.props(styles.header, sx)} />;
 }
 
-export function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("mt-0.5 text-[13px] text-ink-muted", className)} {...props} />;
+export function CardTitle({ sx, ...props }: React.HTMLAttributes<HTMLHeadingElement> & Styled) {
+  return <h2 {...props} {...stylex.props(styles.title, sx)} />;
 }
 
-export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("px-5 pb-5", className)} {...props} />;
+export function CardDescription({
+  sx,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement> & Styled) {
+  return <p {...props} {...stylex.props(styles.description, sx)} />;
+}
+
+export function CardContent({ sx, ...props }: React.HTMLAttributes<HTMLDivElement> & Styled) {
+  return <div {...props} {...stylex.props(styles.content, sx)} />;
 }
